@@ -1,0 +1,62 @@
+// Prisma Schema for SecureLink
+// Database: PostgreSQL (Neon)
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User Model
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  password  String
+  token     String?  @unique
+  createdAt DateTime @default(now())
+  lastLogin DateTime @default(now())
+  
+  links     Link[]
+  
+  @@index([email])
+  @@index([token])
+}
+
+// Link Model
+model Link {
+  id          String    @id @default(cuid())
+  userId      String?
+  originalUrl String
+  shortCode   String    @unique
+  title       String?
+  password    String?
+  expiryTime  DateTime?
+  clicks      Int       @default(0)
+  createdAt   DateTime  @default(now())
+  
+  user        User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  analytics   Analytics[]
+  
+  @@index([shortCode])
+  @@index([userId])
+  @@index([createdAt])
+}
+
+// Analytics Model
+model Analytics {
+  id        String   @id @default(cuid())
+  linkId    String
+  device    String
+  referrer  String
+  userAgent String?
+  timestamp DateTime @default(now())
+  
+  link      Link     @relation(fields: [linkId], references: [id], onDelete: Cascade)
+  
+  @@index([linkId])
+  @@index([timestamp])
+}

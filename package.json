@@ -1,0 +1,35 @@
+{
+  "name": "securelink-shortener",
+  "version": "1.0.0",
+  "description": "Production-ready link shortener with analytics, security, and expiry control",
+  "main": "index.js",
+  "scripts": {
+    "vercel-build": "prisma generate && prisma migrate deploy",
+    "dev": "vercel dev",
+    "migrate": "prisma migrate dev",
+    "generate": "prisma generate",
+    "studio": "prisma studio"
+  },
+  "keywords": [
+    "link-shortener",
+    "url-shortener",
+    "analytics",
+    "vercel",
+    "postgresql"
+  ],
+  "author": "SecureLink Team",
+  "license": "MIT",
+  "dependencies": {
+    "@prisma/client": "^5.7.1",
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "jsonwebtoken": "^9.0.2",
+    "qrcode": "^1.5.3"
+  },
+  "devDependencies": {
+    "prisma": "^5.7.1"
+  },
+  "engines": {
+    "node": ">=18.x"
+  }
+}
