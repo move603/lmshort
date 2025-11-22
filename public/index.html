@@ -407,13 +407,6 @@
         // Auto-detect API base URL (works on localhost and Vercel)
         window.API_BASE = window.location.origin;
         console.log('🌐 API Base URL:', API_BASE);
-        console.log('🔍 Testing API connection...');
-        
-        // Test API health on load
-        fetch(`${API_BASE}/api/health`)
-            .then(res => res.json())
-            .then(data => console.log('✅ API Health:', data))
-            .catch(err => console.error('❌ API Error:', err));
 
         // Show toast notification
         function showToast(message, type = 'success') {

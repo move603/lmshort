@@ -117,19 +117,6 @@
         // Auto-detect API base URL
         window.API_BASE = window.location.origin;
         console.log('🌐 API Base URL:', API_BASE);
-        console.log('🔍 Testing API connection...');
-        
-        // Test API health on load
-        fetch(`${API_BASE}/api/health`)
-            .then(res => {
-                console.log('📡 API Response status:', res.status);
-                return res.json();
-            })
-            .then(data => console.log('✅ API Health:', data))
-            .catch(err => {
-                console.error('❌ API Connection Error:', err);
-                console.error('⚠️ Make sure environment variables are set in Vercel!');
-            });
 
         // Global state
         let currentUser = null;
