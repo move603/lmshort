@@ -514,12 +514,19 @@
                 const response = await fetch(`${API_BASE}/api/links/create`, {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
                     },
                     body: JSON.stringify(requestData)
                 });
 
-                const data = await response.json();
+                let data;
+                try {
+                    data = await response.json();
+                } catch {
+                    const text = await response.text();
+                    throw new Error(text && text.startsWith('The page') ? 'Received non-JSON response from server' : (text || 'Unexpected server response'));
+                }
                 console.log('📥 Response:', data);
 
                 if (!response.ok) {
