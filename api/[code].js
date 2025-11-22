@@ -71,7 +71,7 @@ export default async function handler(req, res) {
       });
     }
 
-    // Handle GET request (redirect)
+    // Handle GET request (redirect or JSON response based on Accept header)
     if (req.method === 'GET') {
       // Check if password is required
       if (link.password) {
@@ -103,8 +103,18 @@ export default async function handler(req, res) {
         })
       ]);
 
-      // Redirect to original URL
-      return res.redirect(302, link.originalUrl);
+      // Check Accept header to decide response type
+      const acceptHeader = req.headers.accept || '';
+      if (acceptHeader.includes('application/json')) {
+        // Respond with JSON containing redirect URL
+        return res.status(200).json({
+          success: true,
+          redirectUrl: link.originalUrl
+        });
+      } else {
+        // Redirect to original URL for browser requests
+        return res.redirect(302, link.originalUrl);
+      }
     }
 
     return res.status(405).json({ error: 'Method not allowed' });

@@ -303,7 +303,12 @@
                     })
                 });
 
-                const data = await response.json();
+                let data;
+                try {
+                    data = await response.json();
+                } catch (jsonError) {
+                    throw new Error('Received non-JSON response from server');
+                }
 
                 if (!response.ok) {
                     throw new Error(data.error || 'Login failed');
@@ -327,6 +332,51 @@
             const captchaAnswer = parseInt(document.getElementById('captchaAnswer').value);
 
             if (!name || !email || !password) {
+                showToast('Please fill in all fields', 'error');
+                return;
+            }
+
+            if (captchaAnswer !== currentCaptcha.answer) {
+                showToast('CAPTCHA verification failed', 'error');
+                currentCaptcha = generateCaptcha();
+                render();
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/api/auth/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        name,
+                        email,
+                        password,
+                        captchaAnswer,
+                        captchaCorrect: currentCaptcha.answer
+                    })
+                });
+
+                let data;
+                try {
+                    data = await response.json();
+                } catch (jsonError) {
+                    throw new Error('Received non-JSON response from server');
+                }
+
+                if (!response.ok) {
+                    throw new Error(data.error || 'Signup failed');
+                }
+
+                currentUser = data.user;
+                localStorage.setItem('authToken', data.user.token);
+                showToast('Account created successfully! 🎉', 'success');
+                switchToDashboard();
+            } catch (error) {
+                showToast(error.message, 'error');
+                currentCaptcha = generateCaptcha();
+                render();
+            }
+        }
                 showToast('Please fill in all fields', 'error');
                 return;
             }
@@ -621,26 +671,33 @@
             return new Date() > new Date(link.expiryTime);
         }
 
-        async function loadUserLinks() {
-            try {
-                const token = localStorage.getItem('authToken');
-                const response = await fetch(`${API_BASE}/api/links`, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-
-                const data = await response.json();
-                if (response.ok) {
-                    links = data.links || [];
-                    console.log('✅ Loaded', links.length, 'links');
-                } else {
-                    console.error('❌ Failed to load links:', data.error);
-                }
-            } catch (error) {
-                console.error('❌ Load links error:', error);
+async function loadUserLinks() {
+    try {
+        const token = localStorage.getItem('authToken');
+        const response = await fetch(`${API_BASE}/api/links`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
             }
+        });
+
+        let data;
+        try {
+            data = await response.json();
+        } catch {
+            console.error('❌ Failed to parse loadUserLinks response as JSON');
+            return;
         }
+
+        if (response.ok) {
+            links = data.links || [];
+            console.log('✅ Loaded', links.length, 'links');
+        } else {
+            console.error('❌ Failed to load links:', data.error);
+        }
+    } catch (error) {
+        console.error('❌ Load links error:', error);
+    }
+}
 
         async function deleteLink(id) {
             if (!confirm('Are you sure you want to delete this link?')) return;
@@ -758,33 +815,41 @@
         }
 
         // Initialize
-        window.addEventListener('DOMContentLoaded', async () => {
-            console.log('🚀 SecureLink Dashboard loading...');
+window.addEventListener('DOMContentLoaded', async () => {
+    console.log('🚀 SecureLink Dashboard loading...');
+    
+    const token = localStorage.getItem('authToken');
+    if (token) {
+        try {
+            const response = await fetch(`${API_BASE}/api/auth/me`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
             
-            const token = localStorage.getItem('authToken');
-            if (token) {
+            if (response.ok) {
+                let data;
                 try {
-                    const response = await fetch(`${API_BASE}/api/auth/me`, {
-                        headers: { 'Authorization': `Bearer ${token}` }
-                    });
-                    
-                    if (response.ok) {
-                        const data = await response.json();
-                        currentUser = data.user;
-                        currentView = 'dashboard';
-                        console.log('✅ Auto-login successful');
-                    } else {
-                        localStorage.removeItem('authToken');
-                        console.log('⚠️ Token invalid, please login');
-                    }
-                } catch (error) {
+                    data = await response.json();
+                } catch {
+                    console.error('❌ Failed to parse auto-login response as JSON');
                     localStorage.removeItem('authToken');
-                    console.error('❌ Auto-login failed:', error);
+                    render();
+                    return;
                 }
+                currentUser = data.user;
+                currentView = 'dashboard';
+                console.log('✅ Auto-login successful');
+            } else {
+                localStorage.removeItem('authToken');
+                console.log('⚠️ Token invalid, please login');
             }
-            
-            render();
-        });
+        } catch (error) {
+            localStorage.removeItem('authToken');
+            console.error('❌ Auto-login failed:', error);
+        }
+    }
+    
+    render();
+});
     </script>
 </body>
 </html>
