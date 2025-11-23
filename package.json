@@ -4,12 +4,11 @@
   "description": "Production-ready link shortener with analytics, security, and expiry control",
   "main": "index.js",
   "scripts": {
-    "vercel-build": "prisma generate && prisma migrate deploy || prisma generate",
+    "vercel-build": "prisma generate && (prisma migrate deploy || true)",
     "dev": "vercel dev",
     "migrate": "prisma migrate dev",
     "generate": "prisma generate",
-    "studio": "prisma studio",
-    "postinstall": "prisma generate"
+    "studio": "prisma studio"
   },
   "keywords": [
     "link-shortener",
