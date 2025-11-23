@@ -5,8 +5,8 @@
  * Creates a new shortened link (anonymous or authenticated)
  */
 
-import { PrismaClient } from '@prisma/client';
-import jwt from 'jsonwebtoken';
+const { PrismaClient } = require('@prisma/client');
+const jwt = require('jsonwebtoken');
 
 const prisma = new PrismaClient();
 
@@ -37,7 +37,7 @@ function isMaliciousURL(url) {
   return maliciousPatterns.some(pattern => lowerUrl.includes(pattern));
 }
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   // Enable CORS
   res.setHeader('Access-Control-Allow-Credentials', 'true');
   res.setHeader('Access-Control-Allow-Origin', '*');

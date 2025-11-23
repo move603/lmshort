@@ -5,12 +5,12 @@
  * Returns current authenticated user's information
  */
 
-import { PrismaClient } from '@prisma/client';
-import jwt from 'jsonwebtoken';
+const { PrismaClient } = require('@prisma/client');
+const jwt = require('jsonwebtoken');
 
 const prisma = new PrismaClient();
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   // Enable CORS
   res.setHeader('Access-Control-Allow-Credentials', 'true');
   res.setHeader('Access-Control-Allow-Origin', '*');

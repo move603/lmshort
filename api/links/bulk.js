@@ -5,8 +5,8 @@
  * Creates multiple shortened links at once (anonymous or authenticated)
  */
 
-import { PrismaClient } from '@prisma/client';
-import jwt from 'jsonwebtoken';
+const { PrismaClient } = require('@prisma/client');
+const jwt = require('jsonwebtoken');
 
 const prisma = new PrismaClient();
 
@@ -20,7 +20,7 @@ function generateShortCode(length = 6) {
   return result;
 }
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   // Enable CORS
   res.setHeader('Access-Control-Allow-Credentials', 'true');
   res.setHeader('Access-Control-Allow-Origin', '*');

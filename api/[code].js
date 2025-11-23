@@ -5,7 +5,7 @@
  * Handles short link redirects and analytics tracking
  */
 
-import { PrismaClient } from '@prisma/client';
+const { PrismaClient } = require('@prisma/client');
 
 const prisma = new PrismaClient();
 
@@ -21,7 +21,7 @@ function getDeviceType(userAgent) {
   return 'Desktop';
 }
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   // Enable CORS
   res.setHeader('Access-Control-Allow-Credentials', 'true');
   res.setHeader('Access-Control-Allow-Origin', '*');
