@@ -13,14 +13,6 @@
       "destination": "/api/:path*"
     },
     {
-      "source": "/dashboard",
-      "destination": "/public/dashboard.html"
-    },
-    {
-      "source": "/",
-      "destination": "/public/index.html"
-    },
-    {
       "source": "/:code",
       "destination": "/api/:code"
     }
