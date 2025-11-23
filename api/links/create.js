@@ -1,16 +1,12 @@
 /**
  * API Route: Create Short Link
  * POST /api/links/create
- * 
- * Creates a new shortened link (anonymous or authenticated)
  */
 
 const { PrismaClient } = require('@prisma/client');
-const jwt = require('jsonwebtoken');
 
 const prisma = new PrismaClient();
 
-// Generate random short code
 function generateShortCode(length = 6) {
   const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
   let result = '';
@@ -20,25 +16,8 @@ function generateShortCode(length = 6) {
   return result;
 }
 
-// Validate URL
-function isValidURL(url) {
-  try {
-    const urlPattern = /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/;
-    return urlPattern.test(url);
-  } catch (e) {
-    return false;
-  }
-}
-
-// Check for malicious URLs
-function isMaliciousURL(url) {
-  const maliciousPatterns = ['malware', 'phishing', 'spam', 'scam', 'hack'];
-  const lowerUrl = url.toLowerCase();
-  return maliciousPatterns.some(pattern => lowerUrl.includes(pattern));
-}
-
 module.exports = async function handler(req, res) {
-  // Enable CORS
+  // CORS headers
   res.setHeader('Access-Control-Allow-Credentials', 'true');
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
@@ -53,37 +32,27 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    const { originalUrl, customAlias, title, password, expiryMinutes, customExpiryDate } = req.body;
+    const { originalUrl, customAlias } = req.body;
 
     // Validation
     if (!originalUrl) {
-      return res.status(400).json({ error: 'Original URL is required' });
+      return res.status(400).json({ error: 'URL is required' });
     }
 
-    if (!isValidURL(originalUrl)) {
+    // Basic URL validation
+    try {
+      new URL(originalUrl);
+    } catch (e) {
       return res.status(400).json({ error: 'Invalid URL format' });
-    }
-
-    if (isMaliciousURL(originalUrl)) {
-      return res.status(400).json({ error: 'URL flagged as potentially malicious' });
-    }
-
-    // Get user ID if authenticated (optional)
-    let userId = null;
-    const authHeader = req.headers.authorization;
-    if (authHeader && authHeader.startsWith('Bearer ')) {
-      try {
-        const token = authHeader.substring(7);
-        const decoded = jwt.verify(token, process.env.JWT_SECRET || 'fallback-secret');
-        const user = await prisma.user.findUnique({ where: { email: decoded.email } });
-        if (user) userId = user.id;
-      } catch (error) {
-        // Continue as anonymous if token is invalid
-      }
     }
 
     // Generate or use custom short code
     let shortCode = customAlias || generateShortCode();
+    
+    // Ensure short code is alphanumeric
+    if (!/^[a-zA-Z0-9]+$/.test(shortCode)) {
+      return res.status(400).json({ error: 'Custom alias must be alphanumeric' });
+    }
 
     // Check if short code already exists
     const existingLink = await prisma.link.findUnique({
@@ -91,38 +60,33 @@ module.exports = async function handler(req, res) {
     });
 
     if (existingLink) {
-      return res.status(400).json({ error: 'Custom alias already taken' });
-    }
-
-    // Calculate expiry time
-    let expiryTime = null;
-    if (customExpiryDate) {
-      expiryTime = new Date(customExpiryDate);
-    } else if (expiryMinutes) {
-      expiryTime = new Date(Date.now() + parseInt(expiryMinutes) * 60000);
+      return res.status(400).json({ error: 'This alias is already taken. Try another one.' });
     }
 
     // Create link
     const link = await prisma.link.create({
       data: {
-        userId,
         originalUrl,
         shortCode,
-        title: title || null,
-        password: password || null,
-        expiryTime
+        userId: null
       }
     });
 
-    res.status(201).json({
+    return res.status(201).json({
       success: true,
-      link,
-      shortUrl: `${req.headers.host}/${shortCode}`,
-      message: 'Link created successfully'
+      link: {
+        id: link.id,
+        originalUrl: link.originalUrl,
+        shortCode: link.shortCode,
+        createdAt: link.createdAt
+      }
     });
   } catch (error) {
     console.error('Create link error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    return res.status(500).json({ 
+      error: 'Failed to create link. Please try again.',
+      details: error.message 
+    });
   } finally {
     await prisma.$disconnect();
   }
