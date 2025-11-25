@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - LinkShort</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gradient-to-br from-purple-50 to-blue-50 min-h-screen">
+    <nav class="bg-white shadow-lg">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex items-center justify-between">
+                <a href="/" class="flex items-center space-x-2">
+                    <i class="fas fa-link text-purple-600 text-2xl"></i>
+                    <span class="text-2xl font-bold text-gray-800">LinkShort</span>
+                </a>
+                <div class="flex items-center space-x-4">
+                    <span class="text-gray-600" id="userName"></span>
+                    <button onclick="logout()" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg"><i class="fas fa-sign-out-alt mr-2"></i>Logout</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+    <div class="container mx-auto px-4 py-8 max-w-6xl">
+        <div class="mb-8">
+            <h1 class="text-4xl font-bold text-gray-800 mb-2">My Dashboard</h1>
+            <p class="text-gray-600">Manage your shortened links</p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <div class="flex items-center justify-between">
+                    <div><p class="text-gray-500 text-sm">Total Links</p><p class="text-3xl font-bold text-purple-600" id="totalLinks">0</p></div>
+                    <div class="bg-purple-100 p-4 rounded-full"><i class="fas fa-link text-purple-600 text-2xl"></i></div>
+                </div>
+            </div>
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <div class="flex items-center justify-between">
+                    <div><p class="text-gray-500 text-sm">Total Clicks</p><p class="text-3xl font-bold text-blue-600" id="totalClicks">0</p></div>
+                    <div class="bg-blue-100 p-4 rounded-full"><i class="fas fa-mouse-pointer text-blue-600 text-2xl"></i></div>
+                </div>
+            </div>
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <div class="flex items-center justify-between">
+                    <div><p class="text-gray-500 text-sm">Active Links</p><p class="text-3xl font-bold text-green-600" id="activeLinks">0</p></div>
+                    <div class="bg-green-100 p-4 rounded-full"><i class="fas fa-check-circle text-green-600 text-2xl"></i></div>
+                </div>
+            </div>
+        </div>
+        <div class="bg-white rounded-2xl shadow-2xl p-8 mb-8">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6">Create New Link</h2>
+            <form onsubmit="createLink(event)">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div><label class="block text-gray-700 font-bold mb-2">Original URL</label><input type="url" id="newUrl" required class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-purple-500 focus:outline-none" placeholder="https://example.com"></div>
+                    <div><label class="block text-gray-700 font-bold mb-2">Custom Alias (Optional)</label><input type="text" id="newAlias" class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-purple-500 focus:outline-none" placeholder="my-link"></div>
+                </div>
+                <button type="submit" class="mt-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white px-8 py-3 rounded-lg font-bold hover:from-purple-700 hover:to-blue-700 transition-all shadow-lg"><i class="fas fa-plus mr-2"></i>Create Link</button>
+            </form>
+        </div>
+        <div class="bg-white rounded-2xl shadow-2xl p-8">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6">Your Links</h2>
+            <div id="linksContainer"><div class="text-center py-8 text-gray-500"><i class="fas fa-spinner fa-spin text-4xl mb-4"></i><p>Loading your links...</p></div></div>
+        </div>
+    </div>
+    <div id="toast" class="fixed top-4 right-4 z-50"></div>
+    <script>
+        const token = localStorage.getItem('authToken');
+        if (!token) window.location.href = '/auth.html';
+        document.getElementById('userName').textContent = localStorage.getItem('userName') || 'User';
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const bgColor = type === 'success' ? 'bg-green-500' : 'bg-red-500';
+            toast.innerHTML = `<div class="${bgColor} text-white px-6 py-3 rounded-lg shadow-lg">${message}</div>`;
+            setTimeout(() => toast.innerHTML = '', 3000);
+        }
+        function logout() {
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('userName');
+            localStorage.removeItem('userEmail');
+            window.location.href = '/';
+        }
+        async function loadLinks() {
+            try {
+                const response = await fetch('/api/links', {
+                    headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }
+                });
+                const data = await response.json();
+                if (!response.ok) {
+                    if (response.status === 401) { logout(); return; }
+                    throw new Error(data.error || 'Failed to load links');
+                }
+                const links = data.links || [];
+                displayLinks(links);
+                updateStats(links);
+            } catch (error) {
+                document.getElementById('linksContainer').innerHTML = `<div class="text-center py-8 text-red-500"><i class="fas fa-exclamation-triangle text-4xl mb-4"></i><p>${error.message}</p></div>`;
+            }
+        }
+        function displayLinks(links) {
+            const container = document.getElementById('linksContainer');
+            if (links.length === 0) {
+                container.innerHTML = `<div class="text-center py-8 text-gray-500"><i class="fas fa-link text-4xl mb-4"></i><p>No links yet. Create your first link above!</p></div>`;
+                return;
+            }
+            container.innerHTML = links.map(link => `
+                <div class="border-b border-gray-200 py-4 hover:bg-gray-50 rounded-lg px-4 transition-all">
+                    <div class="flex items-center justify-between">
+                        <div class="flex-1">
+                            <div class="flex items-center space-x-3 mb-2">
+                                <a href="${window.location.origin}/${link.shortCode}" target="_blank" class="text-purple-600 font-bold text-lg hover:text-purple-800">${window.location.origin}/${link.shortCode}</a>
+                                <button onclick="copyToClipboard('${window.location.origin}/${link.shortCode}')" class="text-gray-500 hover:text-purple-600"><i class="fas fa-copy"></i></button>
+                            </div>
+                            <p class="text-gray-600 text-sm truncate">${link.originalUrl}</p>
+                            <div class="flex items-center space-x-4 mt-2 text-sm text-gray-500">
+                                <span><i class="fas fa-mouse-pointer mr-1"></i>${link.clicks} clicks</span>
+                                <span><i class="fas fa-calendar mr-1"></i>${new Date(link.createdAt).toLocaleDateString()}</span>
+                            </div>
+                        </div>
+                        <button onclick="deleteLink('${link.id}')" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg ml-4"><i class="fas fa-trash"></i></button>
+                    </div>
+                </div>
+            `).join('');
+        }
+        function updateStats(links) {
+            document.getElementById('totalLinks').textContent = links.length;
+            document.getElementById('totalClicks').textContent = links.reduce((sum, link) => sum + link.clicks, 0);
+            document.getElementById('activeLinks').textContent = links.length;
+        }
+        async function createLink(event) {
+            event.preventDefault();
+            const originalUrl = document.getElementById('newUrl').value;
+            const customAlias = document.getElementById('newAlias').value;
+            try {
+                const response = await fetch('/api/links/create', {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ originalUrl: originalUrl.startsWith('http') ? originalUrl : 'https://' + originalUrl, customAlias: customAlias || undefined })
+                });
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.error || 'Failed to create link');
+                showToast('Link created successfully!', 'success');
+                document.getElementById('newUrl').value = '';
+                document.getElementById('newAlias').value = '';
+                loadLinks();
+            } catch (error) {
+                showToast(error.message, 'error');
+            }
+        }
+        async function deleteLink(id) {
+            if (!confirm('Are you sure you want to delete this link?')) return;
+            try {
+                const response = await fetch(`/api/links?id=${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }
+                });
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.error || 'Failed to delete link');
+                showToast('Link deleted', 'success');
+                loadLinks();
+            } catch (error) {
+                showToast(error.message, 'error');
+            }
+        }
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text);
+            showToast('Copied to clipboard!', 'success');
+        }
+        loadLinks();
+    </script>
+</body>
+</html>
