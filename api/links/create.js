@@ -4,6 +4,7 @@
  */
 
 const { PrismaClient } = require('@prisma/client');
+const jwt = require('jsonwebtoken');
 
 const prisma = new PrismaClient();
 
@@ -46,6 +47,20 @@ module.exports = async function handler(req, res) {
       return res.status(400).json({ error: 'Invalid URL format' });
     }
 
+    // Get user ID if authenticated (optional)
+    let userId = null;
+    const authHeader = req.headers.authorization;
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      try {
+        const token = authHeader.substring(7);
+        const decoded = jwt.verify(token, process.env.JWT_SECRET || 'fallback-secret');
+        const user = await prisma.user.findUnique({ where: { email: decoded.email } });
+        if (user) userId = user.id;
+      } catch (error) {
+        // Continue as anonymous if token is invalid
+      }
+    }
+
     // Generate or use custom short code
     let shortCode = customAlias || generateShortCode();
     
@@ -68,7 +83,7 @@ module.exports = async function handler(req, res) {
       data: {
         originalUrl,
         shortCode,
-        userId: null
+        userId
       }
     });
 
@@ -78,6 +93,7 @@ module.exports = async function handler(req, res) {
         id: link.id,
         originalUrl: link.originalUrl,
         shortCode: link.shortCode,
+        clicks: link.clicks,
         createdAt: link.createdAt
       }
     });
