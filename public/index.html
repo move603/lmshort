@@ -24,10 +24,6 @@
             0%, 100% { transform: translateY(0px); }
             50% { transform: translateY(-15px); }
         }
-        @keyframes shimmer {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(100%); }
-        }
         
         .fade-in { animation: fadeIn 0.6s ease-out; }
         .pulse-animation { animation: pulse 2s infinite; }
@@ -37,13 +33,6 @@
             background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
             background-size: 200% 200%;
             animation: gradient 15s ease infinite;
-        }
-        
-        .glass-effect { 
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
         }
         
         .glass-card {
@@ -79,7 +68,6 @@
             box-shadow: 0 25px 50px rgba(102, 126, 234, 0.3);
         }
         
-        /* CRITICAL: Fix input visibility */
         input, select, textarea {
             color: #1f2937 !important;
             background-color: white !important;
@@ -116,12 +104,6 @@
             background-image: 
                 radial-gradient(circle at 20% 50%, rgba(102, 126, 234, 0.05) 0%, transparent 50%),
                 radial-gradient(circle at 80% 80%, rgba(118, 75, 162, 0.05) 0%, transparent 50%);
-        }
-        
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
         }
     </style>
 </head>
@@ -310,14 +292,14 @@
             <h2 class="text-4xl font-bold text-center text-gray-800 mb-12">
                 Powerful Features for Modern Link Management
             </h2>
-            <div class="stats-grid">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <!-- Security -->
                 <div class="feature-card bg-white p-8 rounded-2xl shadow-xl text-center">
                     <div class="bg-gradient-to-br from-purple-500 to-purple-700 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
                         <i class="fas fa-shield-alt text-white text-3xl"></i>
                     </div>
                     <h3 class="text-2xl font-bold text-gray-800 mb-3">High Security</h3>
-                    <p class="text-gray-600 leading-relaxed">SSL encryption, CAPTCHA protection, password security, and advanced spam filtering</p>
+                    <p class="text-gray-600 leading-relaxed">SSL encryption, CAPTCHA protection, password security</p>
                 </div>
 
                 <!-- Analytics -->
@@ -326,7 +308,7 @@
                         <i class="fas fa-chart-line text-white text-3xl"></i>
                     </div>
                     <h3 class="text-2xl font-bold text-gray-800 mb-3">Smart Analytics</h3>
-                    <p class="text-gray-600 leading-relaxed">Track clicks, devices, referrers, and geographic data with real-time charts</p>
+                    <p class="text-gray-600 leading-relaxed">Track clicks, devices, referrers with real-time charts</p>
                 </div>
 
                 <!-- Expiry Control -->
@@ -335,53 +317,7 @@
                         <i class="fas fa-clock text-white text-3xl"></i>
                     </div>
                     <h3 class="text-2xl font-bold text-gray-800 mb-3">Expiry Control</h3>
-                    <p class="text-gray-600 leading-relaxed">Set custom expiration times or specific dates for automatic link expiration</p>
-                </div>
-
-                <!-- QR Codes -->
-                <div class="feature-card bg-white p-8 rounded-2xl shadow-xl text-center">
-                    <div class="bg-gradient-to-br from-pink-500 to-pink-700 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
-                        <i class="fas fa-qrcode text-white text-3xl"></i>
-                    </div>
-                    <h3 class="text-2xl font-bold text-gray-800 mb-3">QR Code Generator</h3>
-                    <p class="text-gray-600 leading-relaxed">Instant QR codes for every link, perfect for print and physical sharing</p>
-                </div>
-
-                <!-- Custom Links -->
-                <div class="feature-card bg-white p-8 rounded-2xl shadow-xl text-center">
-                    <div class="bg-gradient-to-br from-yellow-500 to-orange-600 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
-                        <i class="fas fa-tag text-white text-3xl"></i>
-                    </div>
-                    <h3 class="text-2xl font-bold text-gray-800 mb-3">Custom Aliases</h3>
-                    <p class="text-gray-600 leading-relaxed">Create branded, memorable short links with custom aliases</p>
-                </div>
-
-                <!-- API Access -->
-                <div class="feature-card bg-white p-8 rounded-2xl shadow-xl text-center">
-                    <div class="bg-gradient-to-br from-indigo-500 to-indigo-700 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
-                        <i class="fas fa-code text-white text-3xl"></i>
-                    </div>
-                    <h3 class="text-2xl font-bold text-gray-800 mb-3">API Integration</h3>
-                    <p class="text-gray-600 leading-relaxed">Full REST API for developers to automate link shortening</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Stats Section -->
-        <div class="max-w-4xl mx-auto glass-card rounded-3xl p-10 text-center">
-            <h2 class="text-3xl font-bold text-gray-800 mb-8">Why Choose SecureLink?</h2>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div>
-                    <div class="text-5xl font-bold gradient-bg bg-clip-text text-transparent mb-2">100%</div>
-                    <p class="text-gray-600 font-semibold">Secure & Encrypted</p>
-                </div>
-                <div>
-                    <div class="text-5xl font-bold gradient-bg bg-clip-text text-transparent mb-2">∞</div>
-                    <p class="text-gray-600 font-semibold">Unlimited Links</p>
-                </div>
-                <div>
-                    <div class="text-5xl font-bold gradient-bg bg-clip-text text-transparent mb-2">24/7</div>
-                    <p class="text-gray-600 font-semibold">Always Available</p>
+                    <p class="text-gray-600 leading-relaxed">Set custom expiration times for automatic link expiration</p>
                 </div>
             </div>
         </div>
@@ -404,48 +340,32 @@
     <div id="toastContainer" class="fixed top-4 right-4 z-50 space-y-3"></div>
 
     <script>
-        // Auto-detect API base URL (works on localhost and Vercel)
+        // Auto-detect API base URL
         window.API_BASE = window.location.origin;
-        console.log('🌐 API Base URL:', API_BASE);
-        console.log('🔍 Testing API connection...');
         
-        // Test API health on load
-        fetch(`${API_BASE}/api/health`)
-            .then(res => res.json())
-            .then(data => console.log('✅ API Health:', data))
-            .catch(err => console.error('❌ API Error:', err));
-
         // Show toast notification
         function showToast(message, type = 'success') {
             const toast = document.createElement('div');
             const colors = {
                 success: 'bg-green-500',
                 error: 'bg-red-500',
-                info: 'bg-blue-500',
-                warning: 'bg-yellow-500'
+                info: 'bg-blue-500'
             };
             const icons = {
                 success: 'fa-check-circle',
                 error: 'fa-exclamation-circle',
-                info: 'fa-info-circle',
-                warning: 'fa-exclamation-triangle'
+                info: 'fa-info-circle'
             };
             
-            toast.className = `${colors[type]} px-6 py-4 rounded-xl shadow-2xl text-white transform transition-all duration-300 flex items-center space-x-3 min-w-[300px]`;
+            toast.className = `${colors[type]} px-6 py-4 rounded-xl shadow-2xl text-white flex items-center space-x-3 min-w-[300px]`;
             toast.innerHTML = `
                 <i class="fas ${icons[type]} text-2xl"></i>
                 <span class="font-semibold">${message}</span>
             `;
             
             document.getElementById('toastContainer').appendChild(toast);
-            
-            // Animate in
-            setTimeout(() => toast.style.transform = 'translateX(0)', 10);
-            
-            // Remove after 4 seconds
             setTimeout(() => {
                 toast.style.opacity = '0';
-                toast.style.transform = 'translateX(400px)';
                 setTimeout(() => toast.remove(), 300);
             }, 4000);
         }
@@ -455,10 +375,6 @@
             const customContainer = document.getElementById('customExpiryContainer');
             if (this.value === 'custom') {
                 customContainer.classList.remove('hidden');
-                // Set minimum date to now
-                const now = new Date();
-                now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
-                document.getElementById('customExpiryDate').min = now.toISOString().slice(0, 16);
             } else {
                 customContainer.classList.add('hidden');
             }
@@ -468,66 +384,25 @@
         async function createShortLink() {
             const originalUrl = document.getElementById('originalUrl').value.trim();
             const customAlias = document.getElementById('customAlias').value.trim();
-            const linkTitle = document.getElementById('linkTitle').value.trim();
-            const expiryTime = document.getElementById('expiryTime').value;
-            const linkPassword = document.getElementById('linkPassword').value.trim();
 
-            // Validation
             if (!originalUrl) {
                 showToast('Please enter a URL', 'error');
-                document.getElementById('originalUrl').focus();
                 return;
             }
 
-            // Basic URL validation
             try {
-                new URL(originalUrl.startsWith('http') ? originalUrl : 'https://' + originalUrl);
-            } catch (e) {
-                showToast('Please enter a valid URL', 'error');
-                document.getElementById('originalUrl').focus();
-                return;
-            }
-
-            // Prepare request data
-            const requestData = {
-                originalUrl: originalUrl.startsWith('http') ? originalUrl : 'https://' + originalUrl,
-                customAlias: customAlias || undefined,
-                title: linkTitle || undefined,
-                password: linkPassword || undefined
-            };
-
-            // Handle expiry time
-            if (expiryTime === 'custom') {
-                const customDate = document.getElementById('customExpiryDate').value;
-                if (!customDate) {
-                    showToast('Please select a custom expiry date', 'error');
-                    document.getElementById('customExpiryDate').focus();
-                    return;
-                }
-                requestData.customExpiryDate = customDate;
-            } else if (expiryTime) {
-                requestData.expiryMinutes = parseInt(expiryTime);
-            }
-
-            // Show loading state
-            const button = event.target;
-            const originalHTML = button.innerHTML;
-            button.disabled = true;
-            button.innerHTML = '<i class="fas fa-spinner fa-spin text-2xl"></i><span>Creating...</span>';
-
-            try {
-                console.log('📤 Sending request:', requestData);
-                
                 const response = await fetch(`${API_BASE}/api/links/create`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify(requestData)
+                    body: JSON.stringify({
+                        originalUrl: originalUrl.startsWith('http') ? originalUrl : 'https://' + originalUrl,
+                        customAlias: customAlias || undefined
+                    })
                 });
 
                 const data = await response.json();
-                console.log('📥 Response:', data);
 
                 if (!response.ok) {
                     throw new Error(data.error || 'Failed to create link');
@@ -537,27 +412,9 @@
                 const shortUrl = `${API_BASE}/${data.link.shortCode}`;
                 document.getElementById('shortUrlDisplay').value = shortUrl;
                 document.getElementById('resultContainer').classList.remove('hidden');
-                
-                // Show info
-                let info = `Created: ${new Date(data.link.createdAt).toLocaleString()}`;
-                if (data.link.expiryTime) {
-                    info += ` | Expires: ${new Date(data.link.expiryTime).toLocaleString()}`;
-                }
-                if (data.link.password) {
-                    info += ' | 🔒 Password Protected';
-                }
-                document.getElementById('resultInfo').textContent = info;
-                
                 showToast('Link created successfully! 🎉', 'success');
-
-                // Scroll to result
-                document.getElementById('resultContainer').scrollIntoView({ behavior: 'smooth', block: 'center' });
             } catch (error) {
-                console.error('❌ Error:', error);
                 showToast(error.message, 'error');
-            } finally {
-                button.disabled = false;
-                button.innerHTML = originalHTML;
             }
         }
 
@@ -565,30 +422,9 @@
         function copyShortLink() {
             const input = document.getElementById('shortUrlDisplay');
             input.select();
-            input.setSelectionRange(0, 99999); // For mobile devices
-
-            try {
-                navigator.clipboard.writeText(input.value).then(() => {
-                    showToast('Copied to clipboard! ✓', 'success');
-                    
-                    // Visual feedback
-                    const button = event.target.closest('button');
-                    const originalHTML = button.innerHTML;
-                    button.innerHTML = '<i class="fas fa-check text-xl"></i><span>Copied!</span>';
-                    button.classList.remove('bg-green-600', 'hover:bg-green-700');
-                    button.classList.add('bg-purple-600');
-                    
-                    setTimeout(() => {
-                        button.innerHTML = originalHTML;
-                        button.classList.remove('bg-purple-600');
-                        button.classList.add('bg-green-600', 'hover:bg-green-700');
-                    }, 2000);
-                });
-            } catch (err) {
-                // Fallback for older browsers
-                document.execCommand('copy');
+            navigator.clipboard.writeText(input.value).then(() => {
                 showToast('Copied to clipboard! ✓', 'success');
-            }
+            });
         }
 
         // Create another link
@@ -600,15 +436,7 @@
             document.getElementById('expiryTime').value = '';
             document.getElementById('linkPassword').value = '';
             document.getElementById('customExpiryContainer').classList.add('hidden');
-            document.getElementById('originalUrl').focus();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
-
-        // Page load animation
-        window.addEventListener('DOMContentLoaded', () => {
-            console.log('✅ SecureLink loaded successfully!');
-            console.log('🔗 Create links anonymously - no signup required!');
-        });
     </script>
 </body>
 </html>
