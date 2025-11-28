@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - SecureLink</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gray-50 min-h-screen">
+  <nav class="gradient-bg text-white shadow-lg sticky top-0 z-50">
+    <div class="container mx-auto px-4 py-4">
+      <div class="flex justify-between items-center">
+        <div class="flex items-center space-x-3">
+          <i class="fas fa-link text-3xl"></i>
+          <span class="text-3xl font-bold">SecureLink</span>
+        </div>
+        <div class="flex space-x-4">
+          <a href="/" class="bg-white bg-opacity-20 hover:bg-opacity-30 text-white px-4 py-2 rounded-lg transition">
+            <i class="fas fa-home mr-1"></i> Home
+          </a>
+          <a href="/signup" class="bg-white text-purple-600 px-4 py-2 rounded-lg font-semibold hover:bg-purple-100 transition">
+            <i class="fas fa-user-plus mr-1"></i> Signup
+          </a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container mx-auto px-4 py-12">
+    <div class="max-w-md mx-auto fade-in">
+      <div class="bg-white rounded-2xl shadow-2xl p-8">
+        <div class="text-center mb-8">
+          <i class="fas fa-lock text-6xl gradient-bg bg-clip-text text-transparent mb-4"></i>
+          <h2 class="text-3xl font-bold text-gray-800">Welcome Back</h2>
+          <p class="text-gray-600 mt-2">Sign in to manage your links</p>
+        </div>
+        <div class="space-y-5">
+          <div>
+            <label class="block text-gray-800 font-bold mb-2">
+              <i class="fas fa-envelope text-purple-600"></i> Email
+            </label>
+            <input type="email" id="loginEmail" class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg text-gray-900" placeholder="your@email.com" autocomplete="email">
+          </div>
+          <div>
+            <label class="block text-gray-800 font-bold mb-2">
+              <i class="fas fa-key text-purple-600"></i> Password
+            </label>
+            <input type="password" id="loginPassword" class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg text-gray-900" placeholder="Your password" autocomplete="current-password">
+          </div>
+          <button id="loginBtn" class="w-full gradient-bg text-white py-4 rounded-lg font-bold text-lg hover:shadow-xl transition">
+            <i class="fas fa-sign-in-alt mr-2"></i> Sign In
+          </button>
+          <div class="text-center pt-2">
+            <a href="/signup" class="text-purple-600 hover:text-purple-800 font-semibold text-lg">Don't have an account? <strong>Sign up</strong></a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="toastContainer" class="fixed top-4 right-4 z-50 space-y-3"></div>
+
+  <script>
+    window.API_BASE = window.location.origin;
+    function showToast(message, type = 'success') {
+      const toast = document.createElement('div');
+      const colors = { success: 'bg-green-500', error: 'bg-red-500', info: 'bg-blue-500' };
+      toast.className = `${colors[type]} px-6 py-4 rounded-xl shadow-2xl text-white flex items-center space-x-3 min-w-[300px]`;
+      toast.innerHTML = `<i class="fas ${type === 'error' ? 'fa-exclamation-circle' : 'fa-check-circle'} text-2xl"></i><span class="font-semibold">${message}</span>`;
+      document.getElementById('toastContainer').appendChild(toast);
+      setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 4000);
+    }
+
+    document.getElementById('loginBtn').addEventListener('click', async () => {
+      const email = document.getElementById('loginEmail').value.trim();
+      const password = document.getElementById('loginPassword').value.trim();
+      if (!email || !password) { showToast('Please fill in all fields', 'error'); return; }
+      try {
+        const response = await fetch(`${API_BASE}/api/auth/login`, {
+          method: 'POST', headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body: JSON.stringify({ email, password, captchaAnswer: 0, captchaCorrect: 0 })
+        });
+        let data; try { data = await response.json(); } catch { const text = await response.text(); throw new Error(text || 'Unexpected server response'); }
+        if (!response.ok) throw new Error(data.error || 'Login failed');
+        localStorage.setItem('authToken', data.user.token);
+        showToast('Login successful! 🎉', 'success');
+        window.location.href = '/dashboard';
+      } catch (e) { showToast(e.message, 'error'); }
+    });
+  </script>
+</body>
+</html>

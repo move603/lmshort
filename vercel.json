@@ -13,6 +13,14 @@
       "destination": "/api/:path*"
     },
     {
+      "source": "/login",
+      "destination": "/public/login.html"
+    },
+    {
+      "source": "/signup",
+      "destination": "/public/signup.html"
+    },
+    {
       "source": "/dashboard",
       "destination": "/public/dashboard.html"
     },

@@ -33,7 +33,7 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    const { originalUrl, customAlias } = req.body;
+    const { originalUrl, customAlias, title, password, expiryMinutes, customExpiryDate } = req.body;
 
     // Validation
     if (!originalUrl) {
@@ -45,6 +45,12 @@ module.exports = async function handler(req, res) {
       new URL(originalUrl);
     } catch (e) {
       return res.status(400).json({ error: 'Invalid URL format' });
+    }
+
+    // Spam/malicious filter (basic)
+    const maliciousPatterns = ['malware', 'phishing', 'spam', 'scam', 'hack'];
+    if (maliciousPatterns.some(p => originalUrl.toLowerCase().includes(p))) {
+      return res.status(400).json({ error: 'URL flagged as potentially malicious' });
     }
 
     // Get user ID if authenticated (optional)
@@ -78,12 +84,26 @@ module.exports = async function handler(req, res) {
       return res.status(400).json({ error: 'This alias is already taken. Try another one.' });
     }
 
+    // Compute expiry time if provided
+    let expiryTime = null;
+    if (typeof expiryMinutes === 'number' && expiryMinutes > 0) {
+      expiryTime = new Date(Date.now() + expiryMinutes * 60 * 1000);
+    } else if (customExpiryDate) {
+      const dt = new Date(customExpiryDate);
+      if (!isNaN(dt.getTime())) {
+        expiryTime = dt;
+      }
+    }
+
     // Create link
     const link = await prisma.link.create({
       data: {
         originalUrl,
         shortCode,
-        userId
+        userId,
+        title: title || null,
+        password: password || null,
+        expiryTime
       }
     });
 
@@ -93,6 +113,9 @@ module.exports = async function handler(req, res) {
         id: link.id,
         originalUrl: link.originalUrl,
         shortCode: link.shortCode,
+        title: link.title,
+        password: link.password ? 'protected' : null,
+        expiryTime: link.expiryTime,
         clicks: link.clicks,
         createdAt: link.createdAt
       }

@@ -64,7 +64,8 @@ module.exports = async function handler(req, res) {
         name,
         email,
         password: hashedPassword,
-        token
+        token,
+        lastLogin: new Date()
       }
     });
 

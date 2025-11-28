@@ -118,6 +118,13 @@
         window.API_BASE = window.location.origin;
         console.log('🌐 API Base URL:', API_BASE);
         console.log('🔍 Testing API connection...');
+        // Require auth: redirect to login if no token
+        window.addEventListener('DOMContentLoaded', () => {
+            const token = localStorage.getItem('authToken');
+            if (!token) {
+                window.location.href = '/login';
+            }
+        });
         
         // Test API health on load
         fetch(`${API_BASE}/api/health`)

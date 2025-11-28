@@ -32,6 +32,44 @@ module.exports = async function handler(req, res) {
       `);
     }
 
+    // Handle expiry
+    if (link.expiryTime && new Date() > new Date(link.expiryTime)) {
+      return res.status(410).send(`
+        <html>
+          <body style="font-family: Arial; text-align: center; padding: 50px;">
+            <h1>410 - Link Expired</h1>
+            <p>This short link has expired.</p>
+            <a href="/">Create a new link</a>
+          </body>
+        </html>
+      `);
+    }
+
+    // If link requires password
+    if (link.password) {
+      if (req.method === 'POST') {
+        const { password } = req.body || {};
+        if (!password || password !== link.password) {
+          return res.status(401).json({ error: 'Incorrect password' });
+        }
+        // correct password: proceed to redirect
+      } else {
+        // Show simple password prompt page
+        return res.status(200).send(`
+          <html>
+            <body style="font-family: Arial; text-align: center; padding: 50px;">
+              <h1>Protected Link</h1>
+              <p>This link is password protected. Enter the password to continue.</p>
+              <form method="POST" action="/${code}">
+                <input type="password" name="password" placeholder="Password" style="padding:10px;" />
+                <button type="submit" style="padding:10px 20px;">Unlock</button>
+              </form>
+            </body>
+          </html>
+        `);
+      }
+    }
+
     // Update click count
     await prisma.link.update({
       where: { id: link.id },
