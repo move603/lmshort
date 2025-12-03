@@ -156,8 +156,7 @@
         const APP_STATE = {
             currentUser: null,
             currentView: 'login',
-            links: JSON.parse(localStorage.getItem('links')) || [],
-            users: JSON.parse(localStorage.getItem('users')) || [],
+            links: [],
             settings: JSON.parse(localStorage.getItem('settings')) || {
                 brandName: 'SecureLink',
                 brandColor: '#667eea',
@@ -165,6 +164,28 @@
             },
             captchaVerified: false
         };
+
+        // ==================== API FUNCTIONS ====================
+        async function fetchUserLinks() {
+            if (!APP_STATE.currentUser) return;
+
+            try {
+                const response = await fetch('/api/links', {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.success) {
+                        APP_STATE.links = data.links;
+                    }
+                }
+            } catch (error) {
+                console.error('Error fetching user links:', error);
+            }
+        }
 
         // ==================== UTILITY FUNCTIONS ====================
         function showToast(message, type = 'success') {
@@ -353,7 +374,7 @@
             `;
         }
 
-        function handleLogin() {
+        async function handleLogin() {
             const email = document.getElementById('loginEmail').value;
             const password = document.getElementById('loginPassword').value;
             const captchaAnswer = parseInt(document.getElementById('captchaAnswer').value);
@@ -368,21 +389,38 @@
                 return;
             }
 
-            const user = APP_STATE.users.find(u => u.email === email && u.password === password);
-            
-            if (user) {
-                user.token = generateToken();
-                user.lastLogin = new Date().toISOString();
-                APP_STATE.currentUser = user;
-                saveToLocalStorage();
-                showToast('Login successful!', 'success');
-                switchToDashboard();
-            } else {
-                showToast('Invalid credentials', 'error');
+            try {
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        email,
+                        password,
+                        captchaAnswer,
+                        captchaCorrect: APP_STATE.currentCaptcha.answer
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    APP_STATE.currentUser = data.user;
+                    localStorage.setItem('authToken', data.user.token);
+                    showToast('Login successful!', 'success');
+                    await fetchUserLinks();
+                    switchToDashboard();
+                } else {
+                    showToast(data.error || 'Login failed', 'error');
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                showToast('Network error. Please try again.', 'error');
             }
         }
 
-        function handleSignup() {
+        async function handleSignup() {
             const name = document.getElementById('signupName').value;
             const email = document.getElementById('signupEmail').value;
             const password = document.getElementById('signupPassword').value;
@@ -398,26 +436,35 @@
                 return;
             }
 
-            if (APP_STATE.users.find(u => u.email === email)) {
-                showToast('Email already exists', 'error');
-                return;
+            try {
+                const response = await fetch('/api/auth/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        name,
+                        email,
+                        password,
+                        captchaAnswer,
+                        captchaCorrect: APP_STATE.currentCaptcha.answer
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    APP_STATE.currentUser = data.user;
+                    localStorage.setItem('authToken', data.user.token);
+                    showToast('Account created successfully!', 'success');
+                    switchToDashboard();
+                } else {
+                    showToast(data.error || 'Registration failed', 'error');
+                }
+            } catch (error) {
+                console.error('Signup error:', error);
+                showToast('Network error. Please try again.', 'error');
             }
-
-            const newUser = {
-                id: Date.now().toString(),
-                name,
-                email,
-                password,
-                token: generateToken(),
-                createdAt: new Date().toISOString(),
-                lastLogin: new Date().toISOString()
-            };
-
-            APP_STATE.users.push(newUser);
-            APP_STATE.currentUser = newUser;
-            saveToLocalStorage();
-            showToast('Account created successfully!', 'success');
-            switchToDashboard();
         }
 
         function handleLogout() {
@@ -725,7 +772,7 @@
             }
         }
 
-        function createLink() {
+        async function createLink() {
             const originalUrl = document.getElementById('originalUrl').value;
             const customAlias = document.getElementById('customAlias').value;
             const expiryTime = document.getElementById('expiryTime').value;
@@ -747,13 +794,6 @@
                 return;
             }
 
-            let shortCode = customAlias || generateShortCode();
-            
-            if (APP_STATE.links.find(l => l.shortCode === shortCode)) {
-                showToast('This custom alias is already taken', 'error');
-                return;
-            }
-
             let expiryDateTime = null;
             if (expiryTime === 'custom') {
                 const customDate = document.getElementById('customExpiryDate').value;
@@ -766,39 +806,69 @@
                 expiryDateTime = new Date(Date.now() + parseInt(expiryTime) * 60000).toISOString();
             }
 
-            const newLink = {
-                id: Date.now().toString(),
-                userId: APP_STATE.currentUser.id,
-                originalUrl,
-                shortCode,
-                title: linkTitle,
-                password: linkPassword,
-                expiryTime: expiryDateTime,
-                createdAt: new Date().toISOString(),
-                clicks: 0,
-                analytics: []
-            };
+            try {
+                const response = await fetch('/api/links', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+                    },
+                    body: JSON.stringify({
+                        originalUrl,
+                        customAlias,
+                        title: linkTitle,
+                        password: linkPassword,
+                        expiryTime: expiryDateTime
+                    })
+                });
 
-            APP_STATE.links.push(newLink);
-            saveToLocalStorage();
-            showToast('Link created successfully!', 'success');
-            
-            // Clear form
-            document.getElementById('originalUrl').value = '';
-            document.getElementById('customAlias').value = '';
-            document.getElementById('expiryTime').value = '';
-            document.getElementById('linkPassword').value = '';
-            document.getElementById('linkTitle').value = '';
-            
-            render();
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    showToast('Link created successfully!', 'success');
+
+                    // Clear form
+                    document.getElementById('originalUrl').value = '';
+                    document.getElementById('customAlias').value = '';
+                    document.getElementById('expiryTime').value = '';
+                    document.getElementById('linkPassword').value = '';
+                    document.getElementById('linkTitle').value = '';
+
+                    // Refresh links from API
+                    await fetchUserLinks();
+                    render();
+                } else {
+                    showToast(data.error || 'Failed to create link', 'error');
+                }
+            } catch (error) {
+                console.error('Create link error:', error);
+                showToast('Network error. Please try again.', 'error');
+            }
         }
 
-        function deleteLink(linkId) {
+        async function deleteLink(linkId) {
             if (confirm('Are you sure you want to delete this link?')) {
-                APP_STATE.links = APP_STATE.links.filter(l => l.id !== linkId);
-                saveToLocalStorage();
-                showToast('Link deleted', 'info');
-                render();
+                try {
+                    const response = await fetch(`/api/links/${linkId}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+                        }
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok && data.success) {
+                        APP_STATE.links = APP_STATE.links.filter(l => l.id !== linkId);
+                        showToast('Link deleted', 'info');
+                        render();
+                    } else {
+                        showToast(data.error || 'Failed to delete link', 'error');
+                    }
+                } catch (error) {
+                    console.error('Delete link error:', error);
+                    showToast('Network error. Please try again.', 'error');
+                }
             }
         }
 
@@ -1275,16 +1345,35 @@
         }
 
         // ==================== INITIALIZATION ====================
-        window.addEventListener('DOMContentLoaded', () => {
+        window.addEventListener('DOMContentLoaded', async () => {
             // Auto-login if token exists
-            const storedUsers = JSON.parse(localStorage.getItem('users')) || [];
-            const userWithValidToken = storedUsers.find(u => u.token);
-            
-            if (userWithValidToken) {
-                APP_STATE.currentUser = userWithValidToken;
-                APP_STATE.currentView = 'dashboard';
+            const authToken = localStorage.getItem('authToken');
+
+            if (authToken) {
+                try {
+                    // Try to fetch user links to verify token is valid
+                    const response = await fetch('/api/links', {
+                        headers: {
+                            'Authorization': `Bearer ${authToken}`
+                        }
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        if (data.success) {
+                            // Token is valid, set current user and fetch links
+                            APP_STATE.currentUser = { token: authToken }; // Placeholder, will be updated when needed
+                            APP_STATE.links = data.links;
+                            APP_STATE.currentView = 'dashboard';
+                        }
+                    }
+                } catch (error) {
+                    console.error('Auto-login failed:', error);
+                    // Clear invalid token
+                    localStorage.removeItem('authToken');
+                }
             }
-            
+
             render();
         });
     </script>
