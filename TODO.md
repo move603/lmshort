@@ -11,8 +11,8 @@
 - [ ] Add "Link List" page to dashboard navigation
 - [ ] Implement QR code generation for links
 - [ ] Add link management features (delete, edit, analytics)
-- [ ] Fix URL validation for URLs with query parameters
-- [ ] Allow random text conversion to short links
+- [x] Fix URL validation for URLs with query parameters
+- [x] Allow random text conversion to short links
 - [ ] Optimize mobile UI/UX with responsive design
 - [ ] Enhance overall website design and usability
 
