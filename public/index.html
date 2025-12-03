@@ -231,8 +231,7 @@
         }
 
         function saveToLocalStorage() {
-            localStorage.setItem('links', JSON.stringify(APP_STATE.links));
-            localStorage.setItem('users', JSON.stringify(APP_STATE.users));
+            // Only save settings to localStorage, links and users are handled by API
             localStorage.setItem('settings', JSON.stringify(APP_STATE.settings));
         }
 
@@ -754,7 +753,7 @@
             }
         }
 
-        function deleteSelectedLinks() {
+        async function deleteSelectedLinks() {
             if (selectedLinkIds.size === 0) {
                 showToast('No links selected', 'error');
                 return;
@@ -762,12 +761,13 @@
 
             const count = selectedLinkIds.size;
             const confirmed = confirm(`Are you sure you want to delete ${count} selected link${count > 1 ? 's' : ''}? This action cannot be undone.`);
-            
+
             if (confirmed) {
-                APP_STATE.links = APP_STATE.links.filter(link => !selectedLinkIds.has(link.id));
-                saveToLocalStorage();
+                // Links are now handled by API, no need to update localStorage
                 selectedLinkIds.clear();
                 showToast(`Successfully deleted ${count} link${count > 1 ? 's' : ''}!`, 'success');
+                // Refresh links from API
+                await fetchUserLinks();
                 render();
             }
         }
@@ -1259,8 +1259,10 @@
             render();
         }
 
-        function switchToDashboard() {
+        async function switchToDashboard() {
             APP_STATE.currentView = 'dashboard';
+            // Always fetch fresh links from API when switching to dashboard
+            await fetchUserLinks();
             render();
         }
 
@@ -1321,21 +1323,36 @@
 
             if (authToken) {
                 try {
-                    // Try to fetch user links to verify token is valid
-                    const response = await fetch('/api/links', {
+                    // First, get user data from /api/auth/me
+                    const userResponse = await fetch('/api/auth/me', {
                         headers: {
                             'Authorization': `Bearer ${authToken}`
                         }
                     });
 
-                    if (response.ok) {
-                        const data = await response.json();
-                        if (data.success) {
-                            // Token is valid, set current user and fetch links
-                            APP_STATE.currentUser = { token: authToken }; // Placeholder, will be updated when needed
-                            APP_STATE.links = data.links;
-                            APP_STATE.currentView = 'dashboard';
+                    if (userResponse.ok) {
+                        const userData = await userResponse.json();
+                        if (userData.success) {
+                            APP_STATE.currentUser = userData.user;
+
+                            // Then fetch user's links
+                            const linksResponse = await fetch('/api/links', {
+                                headers: {
+                                    'Authorization': `Bearer ${authToken}`
+                                }
+                            });
+
+                            if (linksResponse.ok) {
+                                const linksData = await linksResponse.json();
+                                if (linksData.success) {
+                                    APP_STATE.links = linksData.links;
+                                    APP_STATE.currentView = 'dashboard';
+                                }
+                            }
                         }
+                    } else {
+                        // Token is invalid, clear it
+                        localStorage.removeItem('authToken');
                     }
                 } catch (error) {
                     console.error('Auto-login failed:', error);
