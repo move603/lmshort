@@ -5,6 +5,13 @@
 - Authentication bypasses database
 - Links only work in same browser
 
+## Recently Fixed Issues ✅
+### URL Shortener Functionality
+- [x] Fixed frontend API call: Changed from `/api/links` to `/api/links/create` for link creation
+- [x] Fixed backend URL validation: Now accepts URLs without protocols (e.g., "google.com") and random text
+- [x] Random text now creates Google search links automatically
+- [x] Links are properly saved to database and can be accessed globally
+
 ## Tasks to Complete
 
 ### 1. Update Authentication Functions
@@ -14,7 +21,7 @@
 - [ ] Remove localStorage user storage
 
 ### 2. Update Link Creation
-- [ ] Modify createLink() to call /api/links/create
+- [x] Modify createLink() to call /api/links/create ✅
 - [ ] Update APP_STATE.links to sync with API responses
 - [ ] Remove localStorage link storage
 
