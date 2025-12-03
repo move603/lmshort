@@ -827,6 +827,10 @@
                 if (response.ok && data.success) {
                     showToast('Link created successfully!', 'success');
 
+                    // Add the new link to APP_STATE immediately for instant UI update
+                    if (!APP_STATE.links) APP_STATE.links = [];
+                    APP_STATE.links.unshift(data.link); // Add to beginning of array
+
                     // Clear form
                     document.getElementById('originalUrl').value = '';
                     document.getElementById('customAlias').value = '';
@@ -834,8 +838,7 @@
                     document.getElementById('linkPassword').value = '';
                     document.getElementById('linkTitle').value = '';
 
-                    // Refresh links from API
-                    await fetchUserLinks();
+                    // Re-render to show the new link immediately
                     render();
                 } else {
                     showToast(data.error || 'Failed to create link', 'error');
@@ -906,41 +909,8 @@
         }
 
         function openLink(shortCode) {
-            const link = APP_STATE.links.find(l => l.shortCode === shortCode);
-            
-            if (!link) {
-                showToast('Link not found', 'error');
-                return;
-            }
-
-            if (checkLinkExpiry(link)) {
-                showToast('This link has expired', 'error');
-                return;
-            }
-
-            if (link.password) {
-                const password = prompt('This link is password protected. Please enter the password:');
-                if (password !== link.password) {
-                    showToast('Incorrect password', 'error');
-                    return;
-                }
-            }
-
-            // Record analytics
-            const analyticsData = {
-                timestamp: new Date().toISOString(),
-                device: getDeviceType(),
-                referrer: document.referrer || 'Direct',
-                userAgent: navigator.userAgent
-            };
-
-            link.clicks = (link.clicks || 0) + 1;
-            if (!link.analytics) link.analytics = [];
-            link.analytics.push(analyticsData);
-            
-            saveToLocalStorage();
-            
-            window.open(link.originalUrl, '_blank');
+            // Use API redirect instead of local logic
+            window.open(`/${shortCode}`, '_blank');
             showToast('Redirecting...', 'info');
         }
 

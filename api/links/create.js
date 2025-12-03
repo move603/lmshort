@@ -40,23 +40,22 @@ module.exports = async function handler(req, res) {
       return res.status(400).json({ error: 'URL is required' });
     }
 
-    // Basic URL validation - allow URLs with or without protocol, and random text
-    const urlPattern = /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/i;
-    const hasProtocol = originalUrl.startsWith('http://') || originalUrl.startsWith('https://');
+    // Enhanced URL validation - accept all valid URLs including complex ones
+    let finalUrl = originalUrl.trim();
 
-    let finalUrl = originalUrl;
+    // Check if it already has a protocol
+    const hasProtocol = finalUrl.startsWith('http://') || finalUrl.startsWith('https://');
 
-    // If it looks like a URL (has domain-like structure), validate and normalize it
-    if (urlPattern.test(originalUrl) || hasProtocol) {
-      try {
-        // Add protocol if missing for URL constructor
-        finalUrl = hasProtocol ? originalUrl : `https://${originalUrl}`;
-        new URL(finalUrl);
-      } catch (e) {
-        return res.status(400).json({ error: 'Invalid URL format' });
-      }
-    } else {
-      // If it's not a URL-like string, treat it as a search query
+    // If no protocol, add https://
+    if (!hasProtocol) {
+      finalUrl = `https://${finalUrl}`;
+    }
+
+    // Validate the URL using URL constructor (handles all valid URLs)
+    try {
+      new URL(finalUrl);
+    } catch (e) {
+      // If URL constructor fails, treat as search query
       finalUrl = `https://www.google.com/search?q=${encodeURIComponent(originalUrl)}`;
     }
 
