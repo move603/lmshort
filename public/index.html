@@ -215,7 +215,7 @@
         /* Mobile Responsiveness */
         @media (max-width: 768px) {
             .container {
-                padding: 0 0.75rem;
+                padding: 0 1rem;
             }
 
             .mobile-menu {
@@ -281,6 +281,19 @@
                 padding: 12px 16px;
                 font-size: 16px;
                 line-height: 1.2;
+                border-radius: 12px;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                transition: all 0.2s ease;
+            }
+
+            button:hover, .btn-touch:hover {
+                transform: translateY(-1px);
+                box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+            }
+
+            button:active, .btn-touch:active {
+                transform: translateY(0);
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             }
 
             /* Better mobile spacing */
@@ -291,28 +304,46 @@
             /* Mobile-optimized form inputs */
             input, select, textarea, button {
                 font-size: 16px; /* Prevent zoom on iOS */
-                border-radius: 8px;
+                border-radius: 12px;
+                border: 2px solid #e5e7eb;
+                transition: border-color 0.2s ease;
+            }
+
+            input:focus, select:focus, textarea:focus {
+                border-color: #667eea;
+                box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
             }
 
             /* Mobile navigation improvements */
             .mobile-nav-btn {
                 padding: 12px 16px;
                 margin: 4px 0;
-                border-radius: 8px;
+                border-radius: 12px;
                 font-size: 16px;
+                font-weight: 600;
+                width: 100%;
+                text-align: left;
+                transition: all 0.2s ease;
+            }
+
+            .mobile-nav-btn:hover {
+                background-color: rgba(102, 126, 234, 0.1);
+                transform: translateX(4px);
             }
 
             /* Mobile modal improvements */
             .mobile-modal {
-                margin: 1rem;
-                max-height: 90vh;
+                margin: 0.5rem;
+                max-height: 95vh;
                 overflow-y: auto;
+                border-radius: 20px;
+                box-shadow: 0 20px 40px rgba(0,0,0,0.3);
             }
 
             /* Mobile grid adjustments */
             .mobile-grid-2 {
                 grid-template-columns: repeat(2, minmax(0, 1fr));
-                gap: 0.75rem;
+                gap: 1rem;
             }
 
             .mobile-grid-1 {
@@ -321,23 +352,184 @@
 
             /* Mobile text sizes */
             .mobile-title {
-                font-size: 1.5rem;
-                line-height: 2rem;
+                font-size: 1.75rem;
+                line-height: 2.25rem;
+                font-weight: 700;
             }
 
             .mobile-subtitle {
                 font-size: 1.125rem;
                 line-height: 1.75rem;
+                font-weight: 500;
             }
 
             /* Mobile button layouts */
             .mobile-btn-group {
                 flex-direction: column;
-                gap: 0.5rem;
+                gap: 0.75rem;
             }
 
             .mobile-btn-group button {
                 width: 100%;
+                font-size: 16px;
+                font-weight: 600;
+            }
+
+            /* Mobile card improvements */
+            .link-card {
+                border-radius: 16px;
+                margin-bottom: 1rem;
+                padding: 1rem;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+                transition: all 0.3s ease;
+            }
+
+            .link-card:hover {
+                transform: translateY(-4px);
+                box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+            }
+
+            /* Mobile form improvements */
+            .mobile-form-group {
+                margin-bottom: 1.5rem;
+            }
+
+            .mobile-form-label {
+                font-size: 16px;
+                font-weight: 600;
+                color: #374151;
+                margin-bottom: 0.5rem;
+                display: block;
+            }
+
+            .mobile-form-input {
+                width: 100%;
+                padding: 16px 12px;
+                border: 2px solid #e5e7eb;
+                border-radius: 12px;
+                font-size: 16px;
+                transition: border-color 0.2s ease;
+            }
+
+            .mobile-form-input:focus {
+                border-color: #667eea;
+                box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+                outline: none;
+            }
+
+            /* Mobile stats cards */
+            .mobile-stats-card {
+                padding: 1.5rem 1rem;
+                border-radius: 16px;
+                text-align: center;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+                transition: transform 0.2s ease;
+            }
+
+            .mobile-stats-card:hover {
+                transform: translateY(-2px);
+            }
+
+            .mobile-stats-icon {
+                font-size: 2rem;
+                margin-bottom: 0.5rem;
+            }
+
+            .mobile-stats-number {
+                font-size: 2rem;
+                font-weight: 700;
+                margin: 0.25rem 0;
+            }
+
+            .mobile-stats-label {
+                font-size: 0.875rem;
+                font-weight: 500;
+                opacity: 0.8;
+            }
+
+            /* Mobile link list improvements */
+            .mobile-link-item {
+                border-radius: 12px;
+                padding: 1rem;
+                margin-bottom: 0.75rem;
+                background: white;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                transition: all 0.2s ease;
+            }
+
+            .mobile-link-item:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+            }
+
+            /* Mobile action buttons */
+            .mobile-action-btn {
+                padding: 8px 12px;
+                border-radius: 8px;
+                font-size: 14px;
+                font-weight: 600;
+                min-width: 80px;
+                text-align: center;
+                transition: all 0.2s ease;
+            }
+
+            .mobile-action-btn:hover {
+                transform: translateY(-1px);
+                box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            }
+
+            /* Mobile popup/modal improvements */
+            .mobile-popup {
+                margin: 1rem;
+                border-radius: 20px;
+                max-width: calc(100vw - 2rem);
+                box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            }
+
+            .mobile-popup-content {
+                padding: 2rem 1.5rem;
+            }
+
+            .mobile-popup-title {
+                font-size: 1.5rem;
+                font-weight: 700;
+                text-align: center;
+                margin-bottom: 1rem;
+            }
+
+            .mobile-popup-text {
+                font-size: 16px;
+                text-align: center;
+                margin-bottom: 1.5rem;
+            }
+
+            /* Mobile QR code container */
+            .mobile-qr-container {
+                display: flex;
+                justify-content: center;
+                margin: 1.5rem 0;
+            }
+
+            /* Mobile navigation bar */
+            nav {
+                padding: 1rem 0;
+            }
+
+            .mobile-brand {
+                font-size: 1.25rem;
+                font-weight: 700;
+            }
+
+            /* Mobile menu button */
+            .mobile-menu-btn {
+                padding: 0.75rem;
+                border-radius: 12px;
+                background: rgba(255,255,255,0.1);
+                transition: background-color 0.2s ease;
+            }
+
+            .mobile-menu-btn:hover {
+                background: rgba(255,255,255,0.2);
             }
         }
 
@@ -808,52 +1000,36 @@
                 <div class="fade-in">
                     <!-- Stats Cards -->
                     <div class="grid grid-cols-1 mobile:grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mb-6 md:mb-8">
-                        <div class="bg-white rounded-xl shadow-lg p-4 md:p-6 link-card mobile-card-spacing">
-                            <div class="flex items-center justify-between">
-                                <div class="flex-1">
-                                    <p class="text-gray-600 text-xs md:text-sm font-semibold">Total Links</p>
-                                    <p class="text-2xl md:text-3xl font-bold text-gray-800 mt-1 md:mt-2">${userLinks.length}</p>
-                                </div>
-                                <div class="bg-blue-100 p-3 md:p-4 rounded-full ml-3">
-                                    <i class="fas fa-link text-blue-600 text-xl md:text-2xl"></i>
-                                </div>
+                        <div class="bg-white rounded-xl shadow-lg mobile-stats-card link-card mobile-card-spacing">
+                            <div class="mobile-stats-icon text-blue-600">
+                                <i class="fas fa-link"></i>
                             </div>
+                            <div class="mobile-stats-number text-gray-800">${userLinks.length}</div>
+                            <div class="mobile-stats-label text-gray-600">Total Links</div>
                         </div>
 
-                        <div class="bg-white rounded-xl shadow-lg p-4 md:p-6 link-card mobile-card-spacing">
-                            <div class="flex items-center justify-between">
-                                <div class="flex-1">
-                                    <p class="text-gray-600 text-xs md:text-sm font-semibold">Active Links</p>
-                                    <p class="text-2xl md:text-3xl font-bold text-green-600 mt-1 md:mt-2">${activeLinks.length}</p>
-                                </div>
-                                <div class="bg-green-100 p-3 md:p-4 rounded-full ml-3">
-                                    <i class="fas fa-check-circle text-green-600 text-xl md:text-2xl"></i>
-                                </div>
+                        <div class="bg-white rounded-xl shadow-lg mobile-stats-card link-card mobile-card-spacing">
+                            <div class="mobile-stats-icon text-green-600">
+                                <i class="fas fa-check-circle"></i>
                             </div>
+                            <div class="mobile-stats-number text-green-600">${activeLinks.length}</div>
+                            <div class="mobile-stats-label text-gray-600">Active Links</div>
                         </div>
 
-                        <div class="bg-white rounded-xl shadow-lg p-4 md:p-6 link-card mobile-card-spacing">
-                            <div class="flex items-center justify-between">
-                                <div class="flex-1">
-                                    <p class="text-gray-600 text-xs md:text-sm font-semibold">Total Clicks</p>
-                                    <p class="text-2xl md:text-3xl font-bold text-purple-600 mt-1 md:mt-2">${totalClicks}</p>
-                                </div>
-                                <div class="bg-purple-100 p-3 md:p-4 rounded-full ml-3">
-                                    <i class="fas fa-mouse-pointer text-purple-600 text-xl md:text-2xl"></i>
-                                </div>
+                        <div class="bg-white rounded-xl shadow-lg mobile-stats-card link-card mobile-card-spacing">
+                            <div class="mobile-stats-icon text-purple-600">
+                                <i class="fas fa-mouse-pointer"></i>
                             </div>
+                            <div class="mobile-stats-number text-purple-600">${totalClicks}</div>
+                            <div class="mobile-stats-label text-gray-600">Total Clicks</div>
                         </div>
 
-                        <div class="bg-white rounded-xl shadow-lg p-4 md:p-6 link-card mobile-card-spacing">
-                            <div class="flex items-center justify-between">
-                                <div class="flex-1">
-                                    <p class="text-gray-600 text-xs md:text-sm font-semibold">Expired Links</p>
-                                    <p class="text-2xl md:text-3xl font-bold text-red-600 mt-1 md:mt-2">${expiredLinks.length}</p>
-                                </div>
-                                <div class="bg-red-100 p-3 md:p-4 rounded-full ml-3">
-                                    <i class="fas fa-clock text-red-600 text-xl md:text-2xl"></i>
-                                </div>
+                        <div class="bg-white rounded-xl shadow-lg mobile-stats-card link-card mobile-card-spacing">
+                            <div class="mobile-stats-icon text-red-600">
+                                <i class="fas fa-clock"></i>
                             </div>
+                            <div class="mobile-stats-number text-red-600">${expiredLinks.length}</div>
+                            <div class="mobile-stats-label text-gray-600">Expired Links</div>
                         </div>
                     </div>
 
@@ -864,25 +1040,25 @@
                         </h3>
                         
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div class="md:col-span-2">
-                                <label class="block text-gray-700 font-semibold mb-2">
-                                    <i class="fas fa-globe"></i> Original URL
+                            <div class="md:col-span-2 mobile-form-group">
+                                <label class="mobile-form-label">
+                                    <i class="fas fa-globe mr-2"></i> Original URL
                                 </label>
-                                <input type="url" id="originalUrl" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="https://example.com/very-long-url">
+                                <input type="url" id="originalUrl" class="mobile-form-input" placeholder="https://example.com/very-long-url">
                             </div>
 
-                            <div>
-                                <label class="block text-gray-700 font-semibold mb-2">
-                                    <i class="fas fa-tag"></i> Custom Alias (Optional)
+                            <div class="mobile-form-group">
+                                <label class="mobile-form-label">
+                                    <i class="fas fa-tag mr-2"></i> Custom Alias (Optional)
                                 </label>
-                                <input type="text" id="customAlias" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="my-custom-link">
+                                <input type="text" id="customAlias" class="mobile-form-input" placeholder="my-custom-link">
                             </div>
 
-                            <div>
-                                <label class="block text-gray-700 font-semibold mb-2">
-                                    <i class="fas fa-clock"></i> Expiry Time
+                            <div class="mobile-form-group">
+                                <label class="mobile-form-label">
+                                    <i class="fas fa-clock mr-2"></i> Expiry Time
                                 </label>
-                                <select id="expiryTime" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                                <select id="expiryTime" class="mobile-form-input">
                                     <option value="">No Expiry</option>
                                     <option value="5">5 Minutes</option>
                                     <option value="10">10 Minutes</option>
@@ -894,25 +1070,25 @@
                                 </select>
                             </div>
 
-                            <div id="customExpiryContainer" class="hidden md:col-span-2">
-                                <label class="block text-gray-700 font-semibold mb-2">
-                                    <i class="fas fa-calendar-alt"></i> Custom Expiry Date & Time
+                            <div id="customExpiryContainer" class="hidden md:col-span-2 mobile-form-group">
+                                <label class="mobile-form-label">
+                                    <i class="fas fa-calendar-alt mr-2"></i> Custom Expiry Date & Time
                                 </label>
-                                <input type="datetime-local" id="customExpiryDate" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                                <input type="datetime-local" id="customExpiryDate" class="mobile-form-input">
                             </div>
 
-                            <div>
-                                <label class="block text-gray-700 font-semibold mb-2">
-                                    <i class="fas fa-lock"></i> Password Protection (Optional)
+                            <div class="mobile-form-group">
+                                <label class="mobile-form-label">
+                                    <i class="fas fa-lock mr-2"></i> Password Protection (Optional)
                                 </label>
-                                <input type="password" id="linkPassword" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="Set a password">
+                                <input type="password" id="linkPassword" class="mobile-form-input" placeholder="Set a password">
                             </div>
 
-                            <div>
-                                <label class="block text-gray-700 font-semibold mb-2">
-                                    <i class="fas fa-image"></i> Link Title (Optional)
+                            <div class="mobile-form-group">
+                                <label class="mobile-form-label">
+                                    <i class="fas fa-image mr-2"></i> Link Title (Optional)
                                 </label>
-                                <input type="text" id="linkTitle" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="My Link">
+                                <input type="text" id="linkTitle" class="mobile-form-input" placeholder="My Link">
                             </div>
                         </div>
 
