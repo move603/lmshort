@@ -173,19 +173,24 @@
 
             try {
                 const token = localStorage.getItem('authToken');
-                const deletePromises = Array.from(selectedLinkIds).map(id =>
-                    fetch(`/api/links?id=${id}`, {
-                        method: 'DELETE',
-                        headers: { 'Authorization': `Bearer ${token}` }
-                    })
-                );
+                const response = await fetch('/api/links/bulk-delete', {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ linkIds: Array.from(selectedLinkIds) })
+                });
 
-                await Promise.all(deletePromises);
-
-                links = links.filter(l => !selectedLinkIds.has(l.id));
-                selectedLinkIds.clear();
-                showToast(`Successfully deleted ${count} link${count > 1 ? 's' : ''}! 🗑️`, 'success');
-                render();
+                if (response.ok) {
+                    const result = await response.json();
+                    links = links.filter(l => !selectedLinkIds.has(l.id));
+                    selectedLinkIds.clear();
+                    showToast(`Successfully deleted ${result.deleted} link${result.deleted > 1 ? 's' : ''}! 🗑️`, 'success');
+                    render();
+                } else {
+                    throw new Error('Bulk delete failed');
+                }
             } catch (error) {
                 showToast('Failed to delete selected links', 'error');
                 console.error('Delete error:', error);

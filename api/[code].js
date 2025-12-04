@@ -60,7 +60,7 @@ module.exports = async function handler(req, res) {
             <body style="font-family: Arial; text-align: center; padding: 50px;">
               <h1>Protected Link</h1>
               <p>This link is password protected. Enter the password to continue.</p>
-              <form method="POST" action="/${code}">
+              <form method="POST" action="/api/${code}">
                 <input type="password" name="password" placeholder="Password" style="padding:10px;" />
                 <button type="submit" style="padding:10px 20px;">Unlock</button>
               </form>
@@ -81,18 +81,28 @@ module.exports = async function handler(req, res) {
       const userAgent = req.headers['user-agent'] || '';
       const referrer = req.headers['referer'] || req.headers['referrer'] || '';
 
-      // Determine device type
+      // Determine device type with better detection
       let device = 'Desktop';
-      if (/mobile|android|iphone|ipad|ipod/i.test(userAgent)) {
-        device = /tablet|ipad/i.test(userAgent) ? 'Tablet' : 'Mobile';
+      if (/tablet|ipad/i.test(userAgent)) {
+        device = 'Tablet';
+      } else if (/mobile|android|iphone|ipod|blackberry|opera mini|iemobile/i.test(userAgent)) {
+        device = 'Mobile';
       }
+
+      // Get IP address
+      const ipAddress = req.headers['x-forwarded-for']?.split(',')[0] ||
+                       req.headers['x-real-ip'] ||
+                       req.connection?.remoteAddress ||
+                       req.socket?.remoteAddress ||
+                       'unknown';
 
       await prisma.analytics.create({
         data: {
           linkId: link.id,
           device,
-          referrer,
-          userAgent
+          referrer: referrer || null,
+          userAgent: userAgent || null,
+          ipAddress
         }
       });
     } catch (analyticsError) {
