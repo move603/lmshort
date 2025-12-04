@@ -215,7 +215,7 @@
         /* Mobile Responsiveness */
         @media (max-width: 768px) {
             .container {
-                padding: 0 1rem;
+                padding: 0 0.75rem;
             }
 
             .mobile-menu {
@@ -272,6 +272,72 @@
 
             .mobile-min-h-44 {
                 min-height: 11rem;
+            }
+
+            /* Enhanced mobile touch targets */
+            button, .btn-touch, input[type="submit"], input[type="button"] {
+                min-height: 48px;
+                min-width: 48px;
+                padding: 12px 16px;
+                font-size: 16px;
+                line-height: 1.2;
+            }
+
+            /* Better mobile spacing */
+            .mobile-card-spacing {
+                margin-bottom: 1.5rem;
+            }
+
+            /* Mobile-optimized form inputs */
+            input, select, textarea, button {
+                font-size: 16px; /* Prevent zoom on iOS */
+                border-radius: 8px;
+            }
+
+            /* Mobile navigation improvements */
+            .mobile-nav-btn {
+                padding: 12px 16px;
+                margin: 4px 0;
+                border-radius: 8px;
+                font-size: 16px;
+            }
+
+            /* Mobile modal improvements */
+            .mobile-modal {
+                margin: 1rem;
+                max-height: 90vh;
+                overflow-y: auto;
+            }
+
+            /* Mobile grid adjustments */
+            .mobile-grid-2 {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 0.75rem;
+            }
+
+            .mobile-grid-1 {
+                grid-template-columns: repeat(1, minmax(0, 1fr));
+            }
+
+            /* Mobile text sizes */
+            .mobile-title {
+                font-size: 1.5rem;
+                line-height: 2rem;
+            }
+
+            .mobile-subtitle {
+                font-size: 1.125rem;
+                line-height: 1.75rem;
+            }
+
+            /* Mobile button layouts */
+            .mobile-btn-group {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .mobile-btn-group button {
+                width: 100%;
             }
         }
 
@@ -741,51 +807,51 @@
             return `
                 <div class="fade-in">
                     <!-- Stats Cards -->
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-                        <div class="bg-white rounded-xl shadow-lg p-6 link-card">
+                    <div class="grid grid-cols-1 mobile:grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mb-6 md:mb-8">
+                        <div class="bg-white rounded-xl shadow-lg p-4 md:p-6 link-card mobile-card-spacing">
                             <div class="flex items-center justify-between">
-                                <div>
-                                    <p class="text-gray-600 text-sm font-semibold">Total Links</p>
-                                    <p class="text-3xl font-bold text-gray-800 mt-2">${userLinks.length}</p>
+                                <div class="flex-1">
+                                    <p class="text-gray-600 text-xs md:text-sm font-semibold">Total Links</p>
+                                    <p class="text-2xl md:text-3xl font-bold text-gray-800 mt-1 md:mt-2">${userLinks.length}</p>
                                 </div>
-                                <div class="bg-blue-100 p-4 rounded-full">
-                                    <i class="fas fa-link text-blue-600 text-2xl"></i>
+                                <div class="bg-blue-100 p-3 md:p-4 rounded-full ml-3">
+                                    <i class="fas fa-link text-blue-600 text-xl md:text-2xl"></i>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="bg-white rounded-xl shadow-lg p-6 link-card">
+                        <div class="bg-white rounded-xl shadow-lg p-4 md:p-6 link-card mobile-card-spacing">
                             <div class="flex items-center justify-between">
-                                <div>
-                                    <p class="text-gray-600 text-sm font-semibold">Active Links</p>
-                                    <p class="text-3xl font-bold text-green-600 mt-2">${activeLinks.length}</p>
+                                <div class="flex-1">
+                                    <p class="text-gray-600 text-xs md:text-sm font-semibold">Active Links</p>
+                                    <p class="text-2xl md:text-3xl font-bold text-green-600 mt-1 md:mt-2">${activeLinks.length}</p>
                                 </div>
-                                <div class="bg-green-100 p-4 rounded-full">
-                                    <i class="fas fa-check-circle text-green-600 text-2xl"></i>
+                                <div class="bg-green-100 p-3 md:p-4 rounded-full ml-3">
+                                    <i class="fas fa-check-circle text-green-600 text-xl md:text-2xl"></i>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="bg-white rounded-xl shadow-lg p-6 link-card">
+                        <div class="bg-white rounded-xl shadow-lg p-4 md:p-6 link-card mobile-card-spacing">
                             <div class="flex items-center justify-between">
-                                <div>
-                                    <p class="text-gray-600 text-sm font-semibold">Total Clicks</p>
-                                    <p class="text-3xl font-bold text-purple-600 mt-2">${totalClicks}</p>
+                                <div class="flex-1">
+                                    <p class="text-gray-600 text-xs md:text-sm font-semibold">Total Clicks</p>
+                                    <p class="text-2xl md:text-3xl font-bold text-purple-600 mt-1 md:mt-2">${totalClicks}</p>
                                 </div>
-                                <div class="bg-purple-100 p-4 rounded-full">
-                                    <i class="fas fa-mouse-pointer text-purple-600 text-2xl"></i>
+                                <div class="bg-purple-100 p-3 md:p-4 rounded-full ml-3">
+                                    <i class="fas fa-mouse-pointer text-purple-600 text-xl md:text-2xl"></i>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="bg-white rounded-xl shadow-lg p-6 link-card">
+                        <div class="bg-white rounded-xl shadow-lg p-4 md:p-6 link-card mobile-card-spacing">
                             <div class="flex items-center justify-between">
-                                <div>
-                                    <p class="text-gray-600 text-sm font-semibold">Expired Links</p>
-                                    <p class="text-3xl font-bold text-red-600 mt-2">${expiredLinks.length}</p>
+                                <div class="flex-1">
+                                    <p class="text-gray-600 text-xs md:text-sm font-semibold">Expired Links</p>
+                                    <p class="text-2xl md:text-3xl font-bold text-red-600 mt-1 md:mt-2">${expiredLinks.length}</p>
                                 </div>
-                                <div class="bg-red-100 p-4 rounded-full">
-                                    <i class="fas fa-clock text-red-600 text-2xl"></i>
+                                <div class="bg-red-100 p-3 md:p-4 rounded-full ml-3">
+                                    <i class="fas fa-clock text-red-600 text-xl md:text-2xl"></i>
                                 </div>
                             </div>
                         </div>
@@ -956,21 +1022,21 @@
                                             </div>
                                         </div>
                                         
-                                        <div class="flex flex-wrap gap-2 mt-2 md:mt-0">
-                                            <button onclick="copyToClipboard('${shortUrl}')" class="flex-1 md:flex-none bg-blue-500 text-white px-4 py-3 md:py-2 rounded-lg hover:bg-blue-600 transition shadow-sm" title="Copy">
-                                                <i class="fas fa-copy"></i>
+                                        <div class="flex flex-wrap gap-2 mt-3 md:mt-0">
+                                            <button onclick="copyToClipboard('${shortUrl}')" class="flex-1 md:flex-none bg-blue-500 text-white px-3 py-3 md:px-4 md:py-2 rounded-lg hover:bg-blue-600 transition shadow-sm btn-touch" title="Copy">
+                                                <i class="fas fa-copy mr-1 md:mr-0"></i><span class="hidden md:inline"> Copy</span>
                                             </button>
-                                            <button onclick="showQRCode('${link.shortCode}')" class="flex-1 md:flex-none bg-purple-500 text-white px-4 py-3 md:py-2 rounded-lg hover:bg-purple-600 transition shadow-sm" title="QR Code">
-                                                <i class="fas fa-qrcode"></i>
+                                            <button onclick="showQRCode('${link.shortCode}')" class="flex-1 md:flex-none bg-purple-500 text-white px-3 py-3 md:px-4 md:py-2 rounded-lg hover:bg-purple-600 transition shadow-sm btn-touch" title="QR Code">
+                                                <i class="fas fa-qrcode mr-1 md:mr-0"></i><span class="hidden md:inline"> QR</span>
                                             </button>
-                                            <button onclick="viewLinkAnalytics('${link.id}')" class="flex-1 md:flex-none bg-green-500 text-white px-4 py-3 md:py-2 rounded-lg hover:bg-green-600 transition shadow-sm" title="Analytics">
-                                                <i class="fas fa-chart-line"></i>
+                                            <button onclick="viewLinkAnalytics('${link.id}')" class="flex-1 md:flex-none bg-green-500 text-white px-3 py-3 md:px-4 md:py-2 rounded-lg hover:bg-green-600 transition shadow-sm btn-touch" title="Analytics">
+                                                <i class="fas fa-chart-line mr-1 md:mr-0"></i><span class="hidden md:inline"> Stats</span>
                                             </button>
-                                            <button onclick="editLink('${link.id}')" class="flex-1 md:flex-none bg-yellow-500 text-white px-4 py-3 md:py-2 rounded-lg hover:bg-yellow-600 transition shadow-sm" title="Edit">
-                                                <i class="fas fa-edit"></i>
+                                            <button onclick="editLink('${link.id}')" class="flex-1 md:flex-none bg-yellow-500 text-white px-3 py-3 md:px-4 md:py-2 rounded-lg hover:bg-yellow-600 transition shadow-sm btn-touch" title="Edit">
+                                                <i class="fas fa-edit mr-1 md:mr-0"></i><span class="hidden md:inline"> Edit</span>
                                             </button>
-                                            <button onclick="deleteLink('${link.id}')" class="flex-1 md:flex-none bg-red-500 text-white px-4 py-3 md:py-2 rounded-lg hover:bg-red-600 transition shadow-sm" title="Delete">
-                                                <i class="fas fa-trash"></i>
+                                            <button onclick="deleteLink('${link.id}')" class="flex-1 md:flex-none bg-red-500 text-white px-3 py-3 md:px-4 md:py-2 rounded-lg hover:bg-red-600 transition shadow-sm btn-touch" title="Delete">
+                                                <i class="fas fa-trash mr-1 md:mr-0"></i><span class="hidden md:inline"> Delete</span>
                                             </button>
                                         </div>
                                     </div>
@@ -1028,12 +1094,33 @@
             const confirmed = confirm(`Are you sure you want to delete ${count} selected link${count > 1 ? 's' : ''}? This action cannot be undone.`);
 
             if (confirmed) {
-                // Links are now handled by API, no need to update localStorage
-                selectedLinkIds.clear();
-                showToast(`Successfully deleted ${count} link${count > 1 ? 's' : ''}!`, 'success');
-                // Refresh links from API
-                await fetchUserLinks();
-                render();
+                try {
+                    const response = await fetch('/api/links/bulk-delete', {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+                        },
+                        body: JSON.stringify({
+                            linkIds: Array.from(selectedLinkIds)
+                        })
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok && data.success) {
+                        // Real-time update: Remove deleted links from state
+                        APP_STATE.links = APP_STATE.links.filter(l => !selectedLinkIds.has(l.id));
+                        selectedLinkIds.clear();
+                        showToast(`Successfully deleted ${data.deleted} link${data.deleted > 1 ? 's' : ''}!`, 'success');
+                        render(); // Instant UI update with new counters
+                    } else {
+                        showToast(data.error || 'Failed to delete links', 'error');
+                    }
+                } catch (error) {
+                    console.error('Bulk delete error:', error);
+                    showToast('Network error. Please try again.', 'error');
+                }
             }
         }
 
@@ -1217,8 +1304,8 @@
             }
 
             try {
-                // Fixed: Use correct API endpoint with query parameter
-                const response = await fetch(`/api/links?id=${linkId}`, {
+                // Use correct API endpoint: /api/links/[id]
+                const response = await fetch(`/api/links/${linkId}`, {
                     method: 'DELETE',
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('authToken')}`
