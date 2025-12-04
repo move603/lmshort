@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,39 +11,104 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
+
         @keyframes slideIn {
-            from { transform: translateX(-100%); }
-            to { transform: translateX(0); }
+            from {
+                transform: translateX(-100%);
+            }
+
+            to {
+                transform: translateX(0);
+            }
         }
+
         @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
         }
+
         @keyframes gradient {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
         }
+
         @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-20px); }
+
+            0%,
+            100% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-20px);
+            }
         }
+
         @keyframes shimmer {
-            0% { background-position: -1000px 0; }
-            100% { background-position: 1000px 0; }
+            0% {
+                background-position: -1000px 0;
+            }
+
+            100% {
+                background-position: 1000px 0;
+            }
         }
+
         @keyframes mobileMenuSlide {
-            from { transform: translateX(100%); }
-            to { transform: translateX(0); }
+            from {
+                transform: translateX(100%);
+            }
+
+            to {
+                transform: translateX(0);
+            }
         }
-        .fade-in { animation: fadeIn 0.6s ease-out; }
-        .slide-in { animation: slideIn 0.4s ease-out; }
-        .pulse-animation { animation: pulse 2s infinite; }
-        .float-animation { animation: float 3s ease-in-out infinite; }
-        .mobile-menu-slide { animation: mobileMenuSlide 0.3s ease-out; }
+
+        .fade-in {
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        .slide-in {
+            animation: slideIn 0.4s ease-out;
+        }
+
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
+
+        .float-animation {
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .mobile-menu-slide {
+            animation: mobileMenuSlide 0.3s ease-out;
+        }
 
         .gradient-bg {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
@@ -64,16 +130,23 @@
             box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
         }
 
-        .custom-scrollbar::-webkit-scrollbar { width: 10px; }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 10px;
+        }
+
         .custom-scrollbar::-webkit-scrollbar-track {
             background: #f1f1f1;
             border-radius: 10px;
         }
+
         .custom-scrollbar::-webkit-scrollbar-thumb {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             border-radius: 10px;
         }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #764ba2; }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #764ba2;
+        }
 
         .captcha-box {
             border: 2px dashed #667eea;
@@ -94,7 +167,7 @@
         }
 
         .shimmer {
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
             background-size: 1000px 100%;
             animation: shimmer 2s infinite;
         }
@@ -111,11 +184,13 @@
             right: -50%;
             width: 200%;
             height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
             transform: rotate(45deg);
         }
 
-        input:focus, select:focus, textarea:focus {
+        input:focus,
+        select:focus,
+        textarea:focus {
             outline: none;
             border-color: #667eea;
             box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
@@ -133,45 +208,100 @@
 
         .neon-text {
             text-shadow: 0 0 10px rgba(102, 126, 234, 0.8),
-                         0 0 20px rgba(102, 126, 234, 0.6),
-                         0 0 30px rgba(102, 126, 234, 0.4);
+                0 0 20px rgba(102, 126, 234, 0.6),
+                0 0 30px rgba(102, 126, 234, 0.4);
         }
 
         /* Mobile Responsiveness */
         @media (max-width: 768px) {
-            .container { padding: 0 1rem; }
-            .mobile-menu { display: block; }
-            .desktop-menu { display: none; }
-            .mobile-hidden { display: none; }
-            .mobile-full { width: 100%; }
-            .mobile-stack { flex-direction: column; }
-            .mobile-text-center { text-align: center; }
-            .mobile-p-4 { padding: 1rem; }
-            .mobile-mb-4 { margin-bottom: 1rem; }
-            .mobile-space-y-4 > * + * { margin-top: 1rem; }
-            .mobile-grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
-            .mobile-text-sm { font-size: 0.875rem; }
-            .mobile-text-base { font-size: 1rem; }
-            .mobile-h-12 { height: 3rem; }
-            .mobile-min-h-44 { min-height: 11rem; }
+            .container {
+                padding: 0 1rem;
+            }
+
+            .mobile-menu {
+                display: block;
+            }
+
+            .desktop-menu {
+                display: none;
+            }
+
+            .mobile-hidden {
+                display: none;
+            }
+
+            .mobile-full {
+                width: 100%;
+            }
+
+            .mobile-stack {
+                flex-direction: column;
+            }
+
+            .mobile-text-center {
+                text-align: center;
+            }
+
+            .mobile-p-4 {
+                padding: 1rem;
+            }
+
+            .mobile-mb-4 {
+                margin-bottom: 1rem;
+            }
+
+            .mobile-space-y-4>*+* {
+                margin-top: 1rem;
+            }
+
+            .mobile-grid-cols-1 {
+                grid-template-columns: repeat(1, minmax(0, 1fr));
+            }
+
+            .mobile-text-sm {
+                font-size: 0.875rem;
+            }
+
+            .mobile-text-base {
+                font-size: 1rem;
+            }
+
+            .mobile-h-12 {
+                height: 3rem;
+            }
+
+            .mobile-min-h-44 {
+                min-height: 11rem;
+            }
         }
 
         @media (min-width: 769px) {
-            .mobile-menu { display: none; }
-            .desktop-menu { display: flex; }
+            .mobile-menu {
+                display: none;
+            }
+
+            .desktop-menu {
+                display: flex;
+            }
         }
 
         /* Touch-friendly buttons */
         @media (max-width: 768px) {
-            button, .btn-touch {
+
+            button,
+            .btn-touch {
                 min-height: 44px;
                 min-width: 44px;
                 padding: 12px 16px;
-                font-size: 16px; /* Prevent zoom on iOS */
+                font-size: 16px;
+                /* Prevent zoom on iOS */
             }
 
-            input, select, textarea {
-                font-size: 16px; /* Prevent zoom on iOS */
+            input,
+            select,
+            textarea {
+                font-size: 16px;
+                /* Prevent zoom on iOS */
             }
         }
 
@@ -213,16 +343,27 @@
 
         /* Responsive grid adjustments */
         @media (max-width: 640px) {
-            .grid-cols-1.md\\:grid-cols-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-            .grid-cols-1.md\\:grid-cols-3 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
-            .grid-cols-1.md\\:grid-cols-2 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+            .grid-cols-1.md\\:grid-cols-4 {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .grid-cols-1.md\\:grid-cols-3 {
+                grid-template-columns: repeat(1, minmax(0, 1fr));
+            }
+
+            .grid-cols-1.md\\:grid-cols-2 {
+                grid-template-columns: repeat(1, minmax(0, 1fr));
+            }
         }
 
         @media (max-width: 480px) {
-            .grid-cols-1.md\\:grid-cols-4 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+            .grid-cols-1.md\\:grid-cols-4 {
+                grid-template-columns: repeat(1, minmax(0, 1fr));
+            }
         }
     </style>
 </head>
+
 <body class="bg-gray-50 min-h-screen">
     <!-- Navigation -->
     <nav class="gradient-bg text-white shadow-lg" id="navbar">
@@ -237,7 +378,8 @@
                 <div id="navButtons" class="desktop-menu flex space-x-4"></div>
 
                 <!-- Mobile Menu Button -->
-                <button id="mobileMenuBtn" class="mobile-menu md:hidden text-white p-2 rounded-lg hover:bg-white hover:bg-opacity-20 transition">
+                <button id="mobileMenuBtn"
+                    class="mobile-menu md:hidden text-white p-2 rounded-lg hover:bg-white hover:bg-opacity-20 transition">
                     <i class="fas fa-bars text-xl"></i>
                 </button>
             </div>
@@ -303,9 +445,8 @@
         // ==================== UTILITY FUNCTIONS ====================
         function showToast(message, type = 'success') {
             const toast = document.createElement('div');
-            toast.className = `px-6 py-4 rounded-lg shadow-lg text-white transform transition-all duration-300 ${
-                type === 'success' ? 'bg-green-500' : type === 'error' ? 'bg-red-500' : 'bg-blue-500'
-            }`;
+            toast.className = `px-6 py-4 rounded-lg shadow-lg text-white transform transition-all duration-300 ${type === 'success' ? 'bg-green-500' : type === 'error' ? 'bg-red-500' : 'bg-blue-500'
+                }`;
             toast.innerHTML = `
                 <div class="flex items-center space-x-2">
                     <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
@@ -755,7 +896,7 @@
             }
 
             const selectAllChecked = selectedLinkIds.size === links.length && links.length > 0;
-            
+
             return `
                 <!-- Select All Checkbox -->
                 <div class="flex items-center justify-between p-4 bg-purple-50 rounded-lg mb-4 border-2 border-purple-200">
@@ -778,11 +919,11 @@
 
                 <!-- Links -->
                 ${links.map(link => {
-                    const isExpired = checkLinkExpiry(link);
-                    const shortUrl = `${window.location.origin}/${link.shortCode}`;
-                    const isSelected = selectedLinkIds.has(link.id);
-                    
-                    return `
+                const isExpired = checkLinkExpiry(link);
+                const shortUrl = `${window.location.origin}/${link.shortCode}`;
+                const isSelected = selectedLinkIds.has(link.id);
+
+                return `
                         <div class="border-2 ${isSelected ? 'border-purple-500 bg-purple-50' : 'border-gray-200 bg-gray-50'} rounded-lg p-4 link-card ${isExpired ? 'opacity-60' : ''} transition-all duration-200">
                             <div class="flex items-start space-x-3">
                                 <!-- Checkbox -->
@@ -837,7 +978,7 @@
                             </div>
                         </div>
                     `;
-                }).join('')}
+            }).join('')}
             `;
         }
 
@@ -852,23 +993,23 @@
 
         function toggleSelectAll(isChecked) {
             const userLinks = APP_STATE.links.filter(l => l.userId === APP_STATE.currentUser.id);
-            
+
             if (isChecked) {
                 userLinks.forEach(link => selectedLinkIds.add(link.id));
             } else {
                 selectedLinkIds.clear();
             }
-            
+
             render();
         }
 
         function updateDeleteButton() {
             const deleteBtn = document.getElementById('deleteSelectedBtn');
             const countSpan = document.getElementById('selectedCount');
-            
+
             if (deleteBtn && countSpan) {
                 countSpan.textContent = selectedLinkIds.size;
-                
+
                 if (selectedLinkIds.size > 0) {
                     deleteBtn.classList.remove('hidden');
                 } else {
@@ -949,8 +1090,6 @@
                 const data = await response.json();
 
                 if (response.ok && data.success) {
-                    showToast('Link created successfully!', 'success');
-
                     // Add the new link to APP_STATE immediately for instant UI update
                     if (!APP_STATE.links) APP_STATE.links = [];
                     APP_STATE.links.unshift(data.link); // Add to beginning of array
@@ -962,7 +1101,11 @@
                     document.getElementById('linkPassword').value = '';
                     document.getElementById('linkTitle').value = '';
 
-                    // Re-render to show the new link immediately
+                    // Show elegant popup modal with link details
+                    const shortUrl = `${window.location.origin}/${data.link.shortCode}`;
+                    showCreatedLinkModal(shortUrl, data.link.shortCode);
+
+                    // Re-render to show the new link immediately (real-time update)
                     render();
                 } else {
                     showToast(data.error || 'Failed to create link', 'error');
@@ -973,29 +1116,128 @@
             }
         }
 
+        // Show elegant created link modal with QR code, copy button, and share options
+        function showCreatedLinkModal(shortUrl, shortCode) {
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4';
+            modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
+
+            modal.innerHTML = `
+                <div class="bg-white rounded-3xl p-6 md:p-10 max-w-lg w-full mx-4 fade-in shadow-2xl transform" onclick="event.stopPropagation()">
+                    <div class="text-center">
+                        <!-- Success Icon -->
+                        <div class="mb-6">
+                            <div class="w-20 h-20 bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center mx-auto mb-4 pulse-animation">
+                                <i class="fas fa-check text-white text-4xl"></i>
+                            </div>
+                            <h3 class="text-3xl font-bold gradient-bg bg-clip-text text-transparent mb-2">Link Created!</h3>
+                            <p class="text-gray-600">Your shortened link is ready to share</p>
+                        </div>
+                        
+                        <!-- Shortened URL Display -->
+                        <div class="bg-gradient-to-r from-purple-50 to-blue-50 border-2 border-purple-200 rounded-2xl p-5 mb-6">
+                            <p class="text-sm text-gray-600 mb-2 font-semibold">Your Shortened URL:</p>
+                            <p class="text-xl font-bold text-purple-700 break-all mb-4">${shortUrl}</p>
+                            <button onclick="copyToClipboard('${shortUrl}'); showToast('Copied to clipboard! ✓', 'success');" class="w-full gradient-bg text-white px-6 py-3 rounded-xl hover:shadow-xl transition font-bold text-lg">
+                                <i class="fas fa-copy mr-2"></i> Copy Link
+                            </button>
+                        </div>
+                        
+                        <!-- QR Code Section -->
+                        <div class="bg-gray-50 rounded-2xl p-6 mb-6">
+                            <p class="text-sm text-gray-600 mb-3 font-semibold">QR Code:</p>
+                            <div id="modalQrcodeContainer" class="flex justify-center mb-4"></div>
+                            <button onclick="downloadQRCodeFromModal('${shortCode}')" class="w-full bg-blue-600 text-white px-6 py-3 rounded-xl hover:bg-blue-700 transition font-semibold">
+                                <i class="fas fa-download mr-2"></i> Download QR Code
+                            </button>
+                        </div>
+                        
+                        <!-- Share Options -->
+                        <div class="grid grid-cols-2 gap-3 mb-6">
+                            <button onclick="shareToTwitter('${shortUrl}')" class="bg-blue-400 text-white px-4 py-3 rounded-xl hover:bg-blue-500 transition font-semibold">
+                                <i class="fab fa-twitter mr-2"></i> Twitter
+                            </button>
+                            <button onclick="shareToWhatsApp('${shortUrl}')" class="bg-green-500 text-white px-4 py-3 rounded-xl hover:bg-green-600 transition font-semibold">
+                                <i class="fab fa-whatsapp mr-2"></i> WhatsApp
+                            </button>
+                        </div>
+                        
+                        <!-- Close Button -->
+                        <button onclick="this.closest('.fixed').remove()" class="w-full bg-gray-500 text-white px-6 py-3 rounded-xl hover:bg-gray-600 transition font-bold text-lg">
+                            <i class="fas fa-times mr-2"></i> Close
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            document.body.appendChild(modal);
+
+            // Generate QR code
+            setTimeout(() => {
+                new QRCode(document.getElementById('modalQrcodeContainer'), {
+                    text: shortUrl,
+                    width: 200,
+                    height: 200,
+                    colorDark: '#667eea',
+                    colorLight: '#ffffff',
+                    correctLevel: QRCode.CorrectLevel.H
+                });
+            }, 100);
+        }
+
+        // Download QR code from modal
+        function downloadQRCodeFromModal(shortCode) {
+            const canvas = document.querySelector('#modalQrcodeContainer canvas');
+            if (canvas) {
+                const url = canvas.toDataURL('image/png');
+                const link = document.createElement('a');
+                link.download = `qr-code-${shortCode}.png`;
+                link.href = url;
+                link.click();
+                showToast('QR Code downloaded!', 'success');
+            }
+        }
+
+        // Share to Twitter
+        function shareToTwitter(url) {
+            const text = encodeURIComponent(`Check out this link: ${url}`);
+            window.open(`https://twitter.com/intent/tweet?text=${text}`, '_blank', 'width=600,height=400');
+        }
+
+        // Share to WhatsApp
+        function shareToWhatsApp(url) {
+            const text = encodeURIComponent(`Check out this link: ${url}`);
+            window.open(`https://wa.me/?text=${text}`, '_blank');
+        }
+
         async function deleteLink(linkId) {
-            if (confirm('Are you sure you want to delete this link?')) {
-                try {
-                    const response = await fetch(`/api/links/${linkId}`, {
-                        method: 'DELETE',
-                        headers: {
-                            'Authorization': `Bearer ${localStorage.getItem('authToken')}`
-                        }
-                    });
+            // Show confirmation with details
+            if (!confirm('⚠️ Delete this link?\n\nThis action cannot be undone!')) {
+                return;
+            }
 
-                    const data = await response.json();
-
-                    if (response.ok && data.success) {
-                        APP_STATE.links = APP_STATE.links.filter(l => l.id !== linkId);
-                        showToast('Link deleted', 'info');
-                        render();
-                    } else {
-                        showToast(data.error || 'Failed to delete link', 'error');
+            try {
+                // Fixed: Use correct API endpoint with query parameter
+                const response = await fetch(`/api/links?id=${linkId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('authToken')}`
                     }
-                } catch (error) {
-                    console.error('Delete link error:', error);
-                    showToast('Network error. Please try again.', 'error');
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    // Real-time update: Remove from state and re-render
+                    APP_STATE.links = APP_STATE.links.filter(l => l.id !== linkId);
+                    showToast('🗑️ Link deleted successfully!', 'success');
+                    render(); // Instant UI update with new counters
+                } else {
+                    showToast(data.error || 'Failed to delete link', 'error');
                 }
+            } catch (error) {
+                console.error('Delete link error:', error);
+                showToast('Network error. Please try again.', 'error');
             }
         }
 
@@ -1033,7 +1275,7 @@
         function showQRCode(shortCode) {
             const link = APP_STATE.links.find(l => l.shortCode === shortCode);
             const shortUrl = `${window.location.origin}/${shortCode}`;
-            
+
             const modal = document.createElement('div');
             modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
             modal.innerHTML = `
@@ -1049,7 +1291,7 @@
                 </div>
             `;
             document.body.appendChild(modal);
-            
+
             new QRCode(document.getElementById('qrcodeContainer'), {
                 text: shortUrl,
                 width: 256,
@@ -1150,7 +1392,7 @@
             }
 
             // Add event listener for custom expiry selection
-            expirySelect.addEventListener('change', function() {
+            expirySelect.addEventListener('change', function () {
                 const customContainer = document.getElementById('editCustomExpiryContainer');
                 if (this.value === 'custom') {
                     customContainer.classList.remove('hidden');
@@ -1215,7 +1457,7 @@
         // ==================== ANALYTICS ====================
         function renderAnalytics() {
             const userLinks = APP_STATE.links.filter(l => l.userId === APP_STATE.currentUser.id);
-            
+
             return `
                 <div class="fade-in">
                     <div class="flex justify-between items-center mb-6">
@@ -1283,7 +1525,7 @@
 
         function renderTopLinks(links) {
             const sorted = links.sort((a, b) => (b.clicks || 0) - (a.clicks || 0)).slice(0, 5);
-            
+
             if (sorted.length === 0) {
                 return '<p class="text-gray-500 text-center py-8">No data available</p>';
             }
@@ -1376,11 +1618,11 @@
 
         function initializeCharts() {
             const userLinks = APP_STATE.links.filter(l => l.userId === APP_STATE.currentUser.id);
-            
+
             // Clicks Over Time Chart
             const clicksCtx = document.getElementById('clicksChart');
             if (clicksCtx) {
-                const last7Days = Array.from({length: 7}, (_, i) => {
+                const last7Days = Array.from({ length: 7 }, (_, i) => {
                     const d = new Date();
                     d.setDate(d.getDate() - (6 - i));
                     return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
@@ -1516,10 +1758,10 @@
 
             APP_STATE.settings.brandName = brandName;
             APP_STATE.settings.brandColor = brandColor;
-            
+
             saveToLocalStorage();
             document.getElementById('brandName').textContent = brandName;
-            
+
             showToast('Settings saved successfully!', 'success');
         }
 
@@ -1583,7 +1825,7 @@
             }
 
             if (mobileMenuOverlay) {
-                mobileMenuOverlay.addEventListener('click', function(e) {
+                mobileMenuOverlay.addEventListener('click', function (e) {
                     if (e.target === mobileMenuOverlay) {
                         closeMobileMenu();
                     }
@@ -1646,7 +1888,7 @@
         // ==================== MAIN RENDER ====================
         function render() {
             const app = document.getElementById('app');
-            
+
             if (!APP_STATE.currentUser) {
                 if (APP_STATE.currentView === 'signup') {
                     app.innerHTML = renderSignup();
@@ -1666,13 +1908,13 @@
                         app.innerHTML = renderDashboard();
                 }
             }
-            
+
             updateNavigation();
-            
+
             // Add event listener for custom expiry selection
             const expirySelect = document.getElementById('expiryTime');
             if (expirySelect) {
-                expirySelect.addEventListener('change', function() {
+                expirySelect.addEventListener('change', function () {
                     const customContainer = document.getElementById('customExpiryContainer');
                     if (this.value === 'custom') {
                         customContainer.classList.remove('hidden');
@@ -1732,4 +1974,5 @@
         });
     </script>
 </body>
+
 </html>
