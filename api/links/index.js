@@ -111,9 +111,16 @@ module.exports = async function handler(req, res) {
       orderBy: { createdAt: 'desc' }
     });
 
+    // Add computed fields for frontend
+    const enrichedLinks = links.map(link => ({
+      ...link,
+      isExpired: link.expiryTime ? new Date() > new Date(link.expiryTime) : false,
+      isActive: link.expiryTime ? new Date() <= new Date(link.expiryTime) : true
+    }));
+
     res.status(200).json({
       success: true,
-      links
+      links: enrichedLinks
     });
   } catch (error) {
     console.error('Get links error:', error);
