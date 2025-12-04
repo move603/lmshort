@@ -1,48 +1,89 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>SecureLink - Modern Link Shortener</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        /* Core Animations */
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
+
         @keyframes slideIn {
-            from { transform: translateX(-100%); }
-            to { transform: translateX(0); }
+            from {
+                transform: translateX(-100%);
+            }
+
+            to {
+                transform: translateX(0);
+            }
         }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(100%);
+            }
+
+            to {
+                transform: translateY(0);
+            }
+        }
+
         @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
         }
+
         @keyframes gradient {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
         }
-        @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-20px); }
+
+        .fade-in {
+            animation: fadeIn 0.4s ease-out;
         }
-        @keyframes shimmer {
-            0% { background-position: -1000px 0; }
-            100% { background-position: 1000px 0; }
+
+        .slide-in {
+            animation: slideIn 0.3s ease-out;
         }
-        @keyframes mobileMenuSlide {
-            from { transform: translateX(100%); }
-            to { transform: translateX(0); }
+
+        .slide-up {
+            animation: slideUp 0.3s ease-out;
         }
-        .fade-in { animation: fadeIn 0.6s ease-out; }
-        .slide-in { animation: slideIn 0.4s ease-out; }
-        .pulse-animation { animation: pulse 2s infinite; }
-        .float-animation { animation: float 3s ease-in-out infinite; }
-        .mobile-menu-slide { animation: mobileMenuSlide 0.3s ease-out; }
+
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
 
         .gradient-bg {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
@@ -50,218 +91,179 @@
             animation: gradient 15s ease infinite;
         }
 
-        .glass-effect {
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+        /* Mobile-First Base Styles */
+        body {
+            font-size: 16px;
+            -webkit-tap-highlight-color: transparent;
+            background-color: #f9fafb;
         }
 
-        .glass-card {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.8);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+        /* Touch Targets */
+        button,
+        a,
+        input,
+        select,
+        textarea {
+            min-height: 48px;
+            touch-action: manipulation;
         }
 
-        .custom-scrollbar::-webkit-scrollbar { width: 10px; }
-        .custom-scrollbar::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-radius: 10px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 10px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #764ba2; }
-
-        .captcha-box {
-            border: 2px dashed #667eea;
-            padding: 20px;
-            border-radius: 12px;
-            background: linear-gradient(135deg, #f9fafb 0%, #e0e7ff 100%);
-        }
-
-        .link-card {
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            border-left: 4px solid transparent;
-        }
-
-        .link-card:hover {
-            transform: translateY(-8px) scale(1.02);
-            box-shadow: 0 20px 40px -5px rgba(102, 126, 234, 0.3);
-            border-left-color: #667eea;
-        }
-
-        .shimmer {
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-            background-size: 1000px 100%;
-            animation: shimmer 2s infinite;
-        }
-
-        .stat-card {
-            position: relative;
-            overflow: hidden;
-        }
-
-        .stat-card::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            right: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
-            transform: rotate(45deg);
-        }
-
-        input:focus, select:focus, textarea:focus {
+        /* Form Elements */
+        input:focus,
+        select:focus,
+        textarea:focus {
             outline: none;
             border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
         }
 
-        .btn-gradient {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            transition: all 0.3s ease;
-        }
-
-        .btn-gradient:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
-        }
-
-        .neon-text {
-            text-shadow: 0 0 10px rgba(102, 126, 234, 0.8),
-                         0 0 20px rgba(102, 126, 234, 0.6),
-                         0 0 30px rgba(102, 126, 234, 0.4);
-        }
-
-        /* Mobile Responsiveness */
-        @media (max-width: 768px) {
-            .container { padding: 0 1rem; }
-            .mobile-menu { display: block; }
-            .desktop-menu { display: none; }
-            .mobile-hidden { display: none; }
-            .mobile-full { width: 100%; }
-            .mobile-stack { flex-direction: column; }
-            .mobile-text-center { text-align: center; }
-            .mobile-p-4 { padding: 1rem; }
-            .mobile-mb-4 { margin-bottom: 1rem; }
-            .mobile-space-y-4 > * + * { margin-top: 1rem; }
-            .mobile-grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
-            .mobile-text-sm { font-size: 0.875rem; }
-            .mobile-text-base { font-size: 1rem; }
-            .mobile-h-12 { height: 3rem; }
-            .mobile-min-h-44 { min-height: 11rem; }
-        }
-
-        @media (min-width: 769px) {
-            .mobile-menu { display: none; }
-            .desktop-menu { display: flex; }
-        }
-
-        /* Touch-friendly buttons */
-        @media (max-width: 768px) {
-            button, .btn-touch {
-                min-height: 44px;
-                min-width: 44px;
-                padding: 12px 16px;
-                font-size: 16px; /* Prevent zoom on iOS */
-            }
-
-            input, select, textarea {
-                font-size: 16px; /* Prevent zoom on iOS */
-            }
-        }
-
-        /* Mobile menu overlay */
-        .mobile-menu-overlay {
+        /* Mobile Navigation Overlay */
+        .mobile-nav-overlay {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            inset: 0;
             background: rgba(0, 0, 0, 0.5);
-            z-index: 999;
+            z-index: 40;
             opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s ease;
+            pointer-events: none;
+            transition: opacity 0.3s;
         }
 
-        .mobile-menu-overlay.active {
+        .mobile-nav-overlay.active {
             opacity: 1;
-            visibility: visible;
+            pointer-events: auto;
         }
 
-        .mobile-menu-content {
+        .mobile-nav-content {
             position: fixed;
             top: 0;
-            right: -300px;
-            width: 280px;
+            right: -100%;
+            width: 85%;
+            max-width: 300px;
             height: 100%;
             background: white;
-            box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
-            transition: right 0.3s ease;
-            z-index: 1000;
-            padding: 2rem 1rem;
+            z-index: 50;
+            transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: -5px 0 25px rgba(0, 0, 0, 0.1);
+            padding: 2rem 1.5rem;
+            display: flex;
+            flex-direction: column;
         }
 
-        .mobile-menu-content.active {
+        .mobile-nav-content.active {
             right: 0;
         }
 
-        /* Responsive grid adjustments */
-        @media (max-width: 640px) {
-            .grid-cols-1.md\\:grid-cols-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-            .grid-cols-1.md\\:grid-cols-3 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
-            .grid-cols-1.md\\:grid-cols-2 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+        /* Responsive Grid & Layout */
+        @media (max-width: 768px) {
+            .container {
+                padding-left: 1rem;
+                padding-right: 1rem;
+            }
+
+            /* Stack Stats Cards */
+            .grid-cols-1.md\:grid-cols-4 {
+                grid-template-columns: 1fr !important;
+                gap: 1rem;
+            }
+
+            /* Adjust Link Cards */
+            .link-card {
+                padding: 1rem !important;
+                margin-bottom: 1rem;
+            }
+
+            /* Mobile Modal (Bottom Sheet) */
+            .modal-wrapper {
+                align-items: flex-end !important;
+            }
+
+            .modal-content {
+                width: 100% !important;
+                max-width: 100% !important;
+                border-radius: 1.5rem 1.5rem 0 0 !important;
+                margin: 0 !important;
+                animation: slideUp 0.3s ease-out !important;
+            }
+
+            .desktop-nav {
+                display: none !important;
+            }
+
+            .mobile-menu-btn {
+                display: block !important;
+            }
         }
 
-        @media (max-width: 480px) {
-            .grid-cols-1.md\\:grid-cols-4 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+        @media (min-width: 769px) {
+            .mobile-menu-btn {
+                display: none !important;
+            }
+
+            .desktop-nav {
+                display: flex !important;
+            }
+        }
+
+        /* Custom Scrollbar */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
         }
     </style>
 </head>
-<body class="bg-gray-50 min-h-screen">
+
+<body class="bg-gray-50 min-h-screen flex flex-col">
     <!-- Navigation -->
-    <nav class="gradient-bg text-white shadow-lg" id="navbar">
-        <div class="container mx-auto px-4 py-4">
+    <nav class="gradient-bg text-white shadow-lg sticky top-0 z-30">
+        <div class="container mx-auto px-4 py-3">
             <div class="flex justify-between items-center">
-                <div class="flex items-center space-x-2">
+                <div class="flex items-center space-x-2 cursor-pointer" onclick="switchToDashboard()">
                     <i class="fas fa-link text-2xl"></i>
-                    <span class="text-2xl font-bold" id="brandName">SecureLink</span>
+                    <span class="text-2xl font-bold">SecureLink</span>
                 </div>
 
                 <!-- Desktop Navigation -->
-                <div id="navButtons" class="desktop-menu flex space-x-4"></div>
+                <div id="navButtons" class="desktop-nav flex space-x-4 items-center"></div>
 
                 <!-- Mobile Menu Button -->
-                <button id="mobileMenuBtn" class="mobile-menu md:hidden text-white p-2 rounded-lg hover:bg-white hover:bg-opacity-20 transition">
+                <button id="mobileMenuBtn"
+                    class="mobile-menu-btn text-white p-2 rounded-lg hover:bg-white/20 transition"
+                    onclick="toggleMobileMenu()">
                     <i class="fas fa-bars text-xl"></i>
                 </button>
             </div>
         </div>
-
-        <!-- Mobile Menu Overlay -->
-        <div id="mobileMenuOverlay" class="mobile-menu-overlay">
-            <div class="mobile-menu-content">
-                <div class="flex justify-between items-center mb-6">
-                    <span class="text-xl font-bold">Menu</span>
-                    <button id="closeMobileMenu" class="text-gray-500 hover:text-gray-700">
-                        <i class="fas fa-times text-xl"></i>
-                    </button>
-                </div>
-                <div id="mobileNavButtons" class="space-y-4"></div>
-            </div>
-        </div>
     </nav>
 
+    <!-- Mobile Navigation Menu -->
+    <div id="mobileNavOverlay" class="mobile-nav-overlay" onclick="closeMobileMenu()"></div>
+    <div id="mobileNavContent" class="mobile-nav-content">
+        <div class="flex justify-between items-center mb-8">
+            <span class="text-xl font-bold text-gray-800">Menu</span>
+            <button onclick="closeMobileMenu()" class="text-gray-500 hover:text-gray-800 p-2">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+        </div>
+        <div id="mobileNavButtons" class="flex flex-col space-y-4"></div>
+    </div>
+
     <!-- Main Container -->
-    <div id="app" class="container mx-auto px-4 py-8"></div>
+    <div id="app" class="container mx-auto px-4 py-6 flex-grow"></div>
 
     <!-- Toast Notifications -->
-    <div id="toastContainer" class="fixed top-4 right-4 z-50 space-y-2"></div>
+    <div id="toastContainer" class="fixed top-4 right-4 z-50 space-y-2 pointer-events-none"></div>
 
     <script>
         // ==================== GLOBAL STATE ====================
@@ -269,48 +271,17 @@
             currentUser: null,
             currentView: 'login',
             links: [],
-            settings: JSON.parse(localStorage.getItem('settings')) || {
-                brandName: 'SecureLink',
-                brandColor: '#667eea',
-                logo: null
-            },
-            captchaVerified: false,
-            isLoading: false
+            currentCaptcha: null
         };
-
-        // ==================== API FUNCTIONS ====================
-        async function fetchUserLinks() {
-            if (!APP_STATE.currentUser) return;
-
-            try {
-                const response = await fetch('/api/links', {
-                    headers: {
-                        'Authorization': `Bearer ${localStorage.getItem('authToken')}`
-                    }
-                });
-
-                if (response.ok) {
-                    const data = await response.json();
-                    if (data.success) {
-                        APP_STATE.links = data.links;
-                    }
-                }
-            } catch (error) {
-                console.error('Error fetching user links:', error);
-            }
-        }
 
         // ==================== UTILITY FUNCTIONS ====================
         function showToast(message, type = 'success') {
             const toast = document.createElement('div');
-            toast.className = `px-6 py-4 rounded-lg shadow-lg text-white transform transition-all duration-300 ${
-                type === 'success' ? 'bg-green-500' : type === 'error' ? 'bg-red-500' : 'bg-blue-500'
-            }`;
+            toast.className = `px-6 py-4 rounded-lg shadow-lg text-white transform transition-all duration-300 pointer-events-auto flex items-center space-x-3 ${type === 'success' ? 'bg-green-600' : type === 'error' ? 'bg-red-600' : 'bg-blue-600'
+                }`;
             toast.innerHTML = `
-                <div class="flex items-center space-x-2">
-                    <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
-                    <span>${message}</span>
-                </div>
+                <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+                <span class="font-medium">${message}</span>
             `;
             document.getElementById('toastContainer').appendChild(toast);
             setTimeout(() => {
@@ -319,58 +290,9 @@
             }, 3000);
         }
 
-        function generateShortCode(length = 6) {
-            const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-            let result = '';
-            for (let i = 0; i < length; i++) {
-                result += chars.charAt(Math.floor(Math.random() * chars.length));
-            }
-            return result;
-        }
-
         function isValidURL(url) {
-            try {
-                // Allow URLs with or without protocol, and handle query parameters
-                let testUrl = url.trim();
-                if (!testUrl.startsWith('http://') && !testUrl.startsWith('https://')) {
-                    testUrl = 'https://' + testUrl;
-                }
-                new URL(testUrl);
-                return true;
-            } catch (e) {
-                return false;
-            }
-        }
-
-        function isMaliciousURL(url) {
-            const maliciousPatterns = ['malware', 'phishing', 'spam', 'scam', 'hack'];
-            const lowerUrl = url.toLowerCase();
-            return maliciousPatterns.some(pattern => lowerUrl.includes(pattern));
-        }
-
-        function saveToLocalStorage() {
-            // Only save settings to localStorage, links and users are handled by API
-            localStorage.setItem('settings', JSON.stringify(APP_STATE.settings));
-        }
-
-        function generateToken() {
-            return 'token_' + Math.random().toString(36).substr(2) + Date.now().toString(36);
-        }
-
-        function checkLinkExpiry(link) {
-            if (!link.expiryTime) return false;
-            return new Date() > new Date(link.expiryTime);
-        }
-
-        function getDeviceType() {
-            const ua = navigator.userAgent;
-            if (/(tablet|ipad|playbook|silk)|(android(?!.*mobi))/i.test(ua)) {
-                return 'Tablet';
-            }
-            if (/Mobile|Android|iP(hone|od)|IEMobile|BlackBerry|Kindle|Silk-Accelerated|(hpw|web)OS|Opera M(obi|ini)/.test(ua)) {
-                return 'Mobile';
-            }
-            return 'Desktop';
+            if (!url || url.trim() === '') return false;
+            return true; // Accept everything
         }
 
         function generateCaptcha() {
@@ -379,54 +301,76 @@
             return { num1, num2, answer: num1 + num2 };
         }
 
-        // ==================== AUTHENTICATION ====================
-        function renderLogin() {
-            const captcha = generateCaptcha();
-            APP_STATE.currentCaptcha = captcha;
-            APP_STATE.captchaVerified = false;
+        // ==================== NAVIGATION ====================
+        function toggleMobileMenu() {
+            document.getElementById('mobileNavOverlay').classList.toggle('active');
+            document.getElementById('mobileNavContent').classList.toggle('active');
+        }
 
+        function closeMobileMenu() {
+            document.getElementById('mobileNavOverlay').classList.remove('active');
+            document.getElementById('mobileNavContent').classList.remove('active');
+        }
+
+        function updateNavigation() {
+            const nav = document.getElementById('navButtons');
+            const mobileNav = document.getElementById('mobileNavButtons');
+
+            if (APP_STATE.currentUser) {
+                const links = [
+                    { icon: 'th-large', text: 'Dashboard', action: 'switchToDashboard()' },
+                    { icon: 'list', text: 'Link List', action: 'switchToLinks()' },
+                    { icon: 'sign-out-alt', text: 'Logout', action: 'handleLogout()', color: 'text-red-600' }
+                ];
+
+                nav.innerHTML = links.map(l => `
+                    <button onclick="${l.action}" class="${l.color || 'text-white'} hover:opacity-80 transition font-medium px-3 py-2 rounded-lg flex items-center">
+                        <i class="fas fa-${l.icon} mr-2"></i> ${l.text}
+                    </button>
+                `).join('');
+
+                mobileNav.innerHTML = links.map(l => `
+                    <button onclick="${l.action}; closeMobileMenu()" class="w-full text-left ${l.color || 'text-gray-700'} hover:bg-gray-100 px-4 py-3 rounded-xl transition font-medium flex items-center text-lg">
+                        <i class="fas fa-${l.icon} mr-3 w-6 text-center"></i> ${l.text}
+                    </button>
+                `).join('');
+            } else {
+                nav.innerHTML = '';
+                mobileNav.innerHTML = `
+                    <button onclick="switchToLogin(); closeMobileMenu()" class="w-full text-left text-gray-700 hover:bg-gray-100 px-4 py-3 rounded-xl transition font-medium text-lg">
+                        <i class="fas fa-sign-in-alt mr-3"></i> Login
+                    </button>
+                `;
+            }
+        }
+
+        // ==================== VIEWS ====================
+        function renderLogin() {
+            APP_STATE.currentCaptcha = generateCaptcha();
             return `
-                <div class="max-w-md mx-auto mt-16 fade-in">
-                    <div class="bg-white rounded-2xl shadow-xl p-8">
+                <div class="max-w-md mx-auto mt-8 fade-in px-4">
+                    <div class="bg-white rounded-2xl shadow-xl p-6 md:p-8">
                         <div class="text-center mb-8">
-                            <i class="fas fa-lock text-6xl gradient-bg bg-clip-text text-transparent mb-4"></i>
-                            <h2 class="text-3xl font-bold text-gray-800">Welcome Back</h2>
-                            <p class="text-gray-600 mt-2">Sign in to manage your links</p>
+                            <i class="fas fa-lock text-5xl gradient-bg bg-clip-text text-transparent mb-4"></i>
+                            <h2 class="text-2xl font-bold text-gray-800">Welcome Back</h2>
                         </div>
-                        
                         <div class="space-y-4">
                             <div>
-                                <label class="block text-gray-700 font-semibold mb-2">Email</label>
-                                <input type="email" id="loginEmail" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="Enter your email">
+                                <label class="block text-gray-700 font-medium mb-1">Email</label>
+                                <input type="email" id="loginEmail" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500" placeholder="your@email.com">
                             </div>
-                            
                             <div>
-                                <label class="block text-gray-700 font-semibold mb-2">Password</label>
-                                <input type="password" id="loginPassword" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="Enter your password">
+                                <label class="block text-gray-700 font-medium mb-1">Password</label>
+                                <input type="password" id="loginPassword" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500" placeholder="••••••••">
                             </div>
-
-                            <!-- CAPTCHA -->
-                            <div class="captcha-box">
-                                <label class="block text-gray-700 font-semibold mb-2">
-                                    <i class="fas fa-shield-alt"></i> Security Check
-                                </label>
-                                <div class="flex items-center space-x-4">
-                                    <div class="text-xl font-bold gradient-bg text-white px-4 py-2 rounded">
-                                        ${captcha.num1} + ${captcha.num2} = ?
-                                    </div>
-                                    <input type="number" id="captchaAnswer" class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500" placeholder="Answer">
-                                </div>
+                            <div class="bg-gray-50 p-4 rounded-xl border border-gray-200">
+                                <label class="block text-gray-700 font-medium mb-2">Security Check: ${APP_STATE.currentCaptcha.num1} + ${APP_STATE.currentCaptcha.num2} = ?</label>
+                                <input type="number" id="captchaAnswer" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500" placeholder="Answer">
                             </div>
-                            
-                            <button onclick="handleLogin()" class="w-full gradient-bg text-white py-3 rounded-lg font-semibold hover:opacity-90 transition duration-300">
-                                <i class="fas fa-sign-in-alt mr-2"></i> Sign In
-                            </button>
-                            
-                            <div class="text-center">
-                                <button onclick="switchToSignup()" class="text-purple-600 hover:underline">
-                                    Don't have an account? Sign up
-                                </button>
-                            </div>
+                            <button onclick="handleLogin()" class="w-full gradient-bg text-white py-3 rounded-xl font-bold text-lg shadow-lg hover:opacity-90 transition">Sign In</button>
+                            <p class="text-center text-gray-600 mt-4">
+                                Don't have an account? <button onclick="switchToSignup()" class="text-purple-600 font-bold hover:underline">Sign Up</button>
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -434,504 +378,177 @@
         }
 
         function renderSignup() {
-            const captcha = generateCaptcha();
-            APP_STATE.currentCaptcha = captcha;
-            APP_STATE.captchaVerified = false;
-
+            APP_STATE.currentCaptcha = generateCaptcha();
             return `
-                <div class="max-w-md mx-auto mt-16 fade-in">
-                    <div class="bg-white rounded-2xl shadow-xl p-8">
+                <div class="max-w-md mx-auto mt-8 fade-in px-4">
+                    <div class="bg-white rounded-2xl shadow-xl p-6 md:p-8">
                         <div class="text-center mb-8">
-                            <i class="fas fa-user-plus text-6xl gradient-bg bg-clip-text text-transparent mb-4"></i>
-                            <h2 class="text-3xl font-bold text-gray-800">Create Account</h2>
-                            <p class="text-gray-600 mt-2">Join SecureLink today</p>
+                            <i class="fas fa-user-plus text-5xl gradient-bg bg-clip-text text-transparent mb-4"></i>
+                            <h2 class="text-2xl font-bold text-gray-800">Create Account</h2>
                         </div>
-                        
                         <div class="space-y-4">
                             <div>
-                                <label class="block text-gray-700 font-semibold mb-2">Full Name</label>
-                                <input type="text" id="signupName" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="Enter your name">
+                                <label class="block text-gray-700 font-medium mb-1">Full Name</label>
+                                <input type="text" id="signupName" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500" placeholder="John Doe">
                             </div>
-
                             <div>
-                                <label class="block text-gray-700 font-semibold mb-2">Email</label>
-                                <input type="email" id="signupEmail" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="Enter your email">
+                                <label class="block text-gray-700 font-medium mb-1">Email</label>
+                                <input type="email" id="signupEmail" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500" placeholder="your@email.com">
                             </div>
-                            
                             <div>
-                                <label class="block text-gray-700 font-semibold mb-2">Password</label>
-                                <input type="password" id="signupPassword" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="Create a password">
+                                <label class="block text-gray-700 font-medium mb-1">Password</label>
+                                <input type="password" id="signupPassword" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500" placeholder="Create a password">
                             </div>
-
-                            <!-- CAPTCHA -->
-                            <div class="captcha-box">
-                                <label class="block text-gray-700 font-semibold mb-2">
-                                    <i class="fas fa-shield-alt"></i> Security Check
-                                </label>
-                                <div class="flex items-center space-x-4">
-                                    <div class="text-xl font-bold gradient-bg text-white px-4 py-2 rounded">
-                                        ${captcha.num1} + ${captcha.num2} = ?
-                                    </div>
-                                    <input type="number" id="captchaAnswer" class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500" placeholder="Answer">
-                                </div>
+                            <div class="bg-gray-50 p-4 rounded-xl border border-gray-200">
+                                <label class="block text-gray-700 font-medium mb-2">Security Check: ${APP_STATE.currentCaptcha.num1} + ${APP_STATE.currentCaptcha.num2} = ?</label>
+                                <input type="number" id="captchaAnswer" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500" placeholder="Answer">
                             </div>
-                            
-                            <button onclick="handleSignup()" class="w-full gradient-bg text-white py-3 rounded-lg font-semibold hover:opacity-90 transition duration-300">
-                                <i class="fas fa-user-check mr-2"></i> Create Account
-                            </button>
-                            
-                            <div class="text-center">
-                                <button onclick="switchToLogin()" class="text-purple-600 hover:underline">
-                                    Already have an account? Sign in
-                                </button>
-                            </div>
+                            <button onclick="handleSignup()" class="w-full gradient-bg text-white py-3 rounded-xl font-bold text-lg shadow-lg hover:opacity-90 transition">Create Account</button>
+                            <p class="text-center text-gray-600 mt-4">
+                                Already have an account? <button onclick="switchToLogin()" class="text-purple-600 font-bold hover:underline">Sign In</button>
+                            </p>
                         </div>
                     </div>
                 </div>
             `;
         }
 
+        function renderDashboard() {
+            const userLinks = APP_STATE.links;
+            const activeLinks = userLinks.filter(l => !l.isExpired);
+            const totalClicks = userLinks.reduce((sum, l) => sum + (l.clicks || 0), 0);
+
+            return `
+                <div class="fade-in space-y-6">
+                    <!-- Stats Grid -->
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        ${renderStatCard('Total Links', userLinks.length, 'link', 'blue')}
+                        ${renderStatCard('Active', activeLinks.length, 'check-circle', 'green')}
+                        ${renderStatCard('Clicks', totalClicks, 'mouse-pointer', 'purple')}
+                        ${renderStatCard('Expired', userLinks.length - activeLinks.length, 'clock', 'red')}
+                    </div>
+
+                    <!-- Create Link Card -->
+                    <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8">
+                        <h3 class="text-xl font-bold text-gray-800 mb-6 flex items-center">
+                            <i class="fas fa-magic gradient-bg bg-clip-text text-transparent mr-3"></i> Create New Link
+                        </h3>
+                        <div class="space-y-4">
+                            <input type="url" id="originalUrl" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500" placeholder="Paste your long URL here...">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <input type="text" id="customAlias" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500" placeholder="Custom Alias (Optional)">
+                                <select id="expiryTime" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 bg-white">
+                                    <option value="">No Expiry</option>
+                                    <option value="60">1 Hour</option>
+                                    <option value="1440">24 Hours</option>
+                                    <option value="10080">7 Days</option>
+                                </select>
+                            </div>
+                            <button onclick="createLink()" class="w-full gradient-bg text-white py-3 rounded-xl font-bold text-lg shadow-lg hover:opacity-90 transition">
+                                Shorten URL <i class="fas fa-arrow-right ml-2"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Recent Links -->
+                    <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8">
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="text-xl font-bold text-gray-800">Recent Links</h3>
+                            <button onclick="switchToLinks()" class="text-purple-600 font-bold hover:underline">View All</button>
+                        </div>
+                        <div class="space-y-4">
+                            ${userLinks.slice(0, 5).map(link => renderLinkCard(link)).join('')}
+                            ${userLinks.length === 0 ? '<p class="text-center text-gray-500 py-8">No links yet. Create one above!</p>' : ''}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderStatCard(title, value, icon, color) {
+            return `
+                <div class="bg-white rounded-2xl shadow-sm p-5 border border-gray-100 flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-500 text-sm font-medium">${title}</p>
+                        <p class="text-2xl font-bold text-gray-800 mt-1">${value}</p>
+                    </div>
+                    <div class="bg-${color}-100 p-3 rounded-xl">
+                        <i class="fas fa-${icon} text-${color}-600 text-xl"></i>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderLinkCard(link) {
+            const shortUrl = `${window.location.origin}/${link.shortCode}`;
+            return `
+                <div class="border border-gray-200 rounded-xl p-4 hover:shadow-md transition bg-gray-50">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-center space-x-2 mb-1">
+                                <a href="${shortUrl}" target="_blank" class="text-purple-600 font-bold text-lg hover:underline truncate block">
+                                    ${shortUrl}
+                                </a>
+                                <button onclick="copyToClipboard('${shortUrl}')" class="text-gray-400 hover:text-gray-600">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                            </div>
+                            <p class="text-gray-500 text-sm truncate">${link.originalUrl}</p>
+                            <div class="flex items-center space-x-4 mt-2 text-xs text-gray-400 font-medium">
+                                <span><i class="fas fa-mouse-pointer mr-1"></i> ${link.clicks || 0} clicks</span>
+                                <span><i class="fas fa-calendar mr-1"></i> ${new Date(link.createdAt).toLocaleDateString()}</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-2 w-full md:w-auto">
+                            <button onclick="showQRCode('${link.shortCode}')" class="flex-1 md:flex-none bg-white border border-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-50 font-medium">
+                                <i class="fas fa-qrcode"></i>
+                            </button>
+                            <button onclick="deleteLink('${link.id}')" class="flex-1 md:flex-none bg-red-50 border border-red-100 text-red-600 px-4 py-2 rounded-lg hover:bg-red-100 font-medium">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // ==================== ACTIONS ====================
         async function handleLogin() {
             const email = document.getElementById('loginEmail').value;
             const password = document.getElementById('loginPassword').value;
             const captchaAnswer = parseInt(document.getElementById('captchaAnswer').value);
 
-            if (!email || !password) {
-                showToast('Please fill in all fields', 'error');
-                return;
-            }
-
-            if (captchaAnswer !== APP_STATE.currentCaptcha.answer) {
-                showToast('CAPTCHA verification failed', 'error');
-                return;
-            }
+            if (!email || !password) return showToast('Please fill all fields', 'error');
+            if (captchaAnswer !== APP_STATE.currentCaptcha.answer) return showToast('Incorrect CAPTCHA', 'error');
 
             try {
-                const response = await fetch('/api/auth/login', {
+                const res = await fetch('/api/auth/login', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        email,
-                        password,
-                        captchaAnswer,
-                        captchaCorrect: APP_STATE.currentCaptcha.answer
-                    })
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password, captchaAnswer, captchaCorrect: APP_STATE.currentCaptcha.answer })
                 });
+                const data = await res.json();
 
-                const data = await response.json();
-
-                if (response.ok && data.success) {
+                if (res.ok) {
                     APP_STATE.currentUser = data.user;
                     localStorage.setItem('authToken', data.user.token);
-                    showToast('Login successful!', 'success');
                     await fetchUserLinks();
                     switchToDashboard();
+                    showToast('Welcome back!');
                 } else {
                     showToast(data.error || 'Login failed', 'error');
                 }
-            } catch (error) {
-                console.error('Login error:', error);
-                showToast('Network error. Please try again.', 'error');
-            }
-        }
-
-        async function handleSignup() {
-            const name = document.getElementById('signupName').value;
-            const email = document.getElementById('signupEmail').value;
-            const password = document.getElementById('signupPassword').value;
-            const captchaAnswer = parseInt(document.getElementById('captchaAnswer').value);
-
-            if (!name || !email || !password) {
-                showToast('Please fill in all fields', 'error');
-                return;
-            }
-
-            if (captchaAnswer !== APP_STATE.currentCaptcha.answer) {
-                showToast('CAPTCHA verification failed', 'error');
-                return;
-            }
-
-            try {
-                const response = await fetch('/api/auth/register', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        name,
-                        email,
-                        password,
-                        captchaAnswer,
-                        captchaCorrect: APP_STATE.currentCaptcha.answer
-                    })
-                });
-
-                const data = await response.json();
-
-                if (response.ok && data.success) {
-                    APP_STATE.currentUser = data.user;
-                    localStorage.setItem('authToken', data.user.token);
-                    showToast('Account created successfully!', 'success');
-                    switchToDashboard();
-                } else {
-                    showToast(data.error || 'Registration failed', 'error');
-                }
-            } catch (error) {
-                console.error('Signup error:', error);
-                showToast('Network error. Please try again.', 'error');
-            }
-        }
-
-        function handleLogout() {
-            APP_STATE.currentUser = null;
-            showToast('Logged out successfully', 'info');
-            switchToLogin();
-        }
-
-        // ==================== DASHBOARD ====================
-        function renderDashboard() {
-            const userLinks = APP_STATE.links.filter(l => l.userId === APP_STATE.currentUser.id);
-            const activeLinks = userLinks.filter(l => !checkLinkExpiry(l));
-            const totalClicks = userLinks.reduce((sum, l) => sum + (l.clicks || 0), 0);
-            const expiredLinks = userLinks.filter(l => checkLinkExpiry(l));
-
-            return `
-                <div class="fade-in">
-                    <!-- Stats Cards -->
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-                        <div class="bg-white rounded-xl shadow-lg p-6 link-card">
-                            <div class="flex items-center justify-between">
-                                <div>
-                                    <p class="text-gray-600 text-sm font-semibold">Total Links</p>
-                                    <p class="text-3xl font-bold text-gray-800 mt-2">${userLinks.length}</p>
-                                </div>
-                                <div class="bg-blue-100 p-4 rounded-full">
-                                    <i class="fas fa-link text-blue-600 text-2xl"></i>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="bg-white rounded-xl shadow-lg p-6 link-card">
-                            <div class="flex items-center justify-between">
-                                <div>
-                                    <p class="text-gray-600 text-sm font-semibold">Active Links</p>
-                                    <p class="text-3xl font-bold text-green-600 mt-2">${activeLinks.length}</p>
-                                </div>
-                                <div class="bg-green-100 p-4 rounded-full">
-                                    <i class="fas fa-check-circle text-green-600 text-2xl"></i>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="bg-white rounded-xl shadow-lg p-6 link-card">
-                            <div class="flex items-center justify-between">
-                                <div>
-                                    <p class="text-gray-600 text-sm font-semibold">Total Clicks</p>
-                                    <p class="text-3xl font-bold text-purple-600 mt-2">${totalClicks}</p>
-                                </div>
-                                <div class="bg-purple-100 p-4 rounded-full">
-                                    <i class="fas fa-mouse-pointer text-purple-600 text-2xl"></i>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="bg-white rounded-xl shadow-lg p-6 link-card">
-                            <div class="flex items-center justify-between">
-                                <div>
-                                    <p class="text-gray-600 text-sm font-semibold">Expired Links</p>
-                                    <p class="text-3xl font-bold text-red-600 mt-2">${expiredLinks.length}</p>
-                                </div>
-                                <div class="bg-red-100 p-4 rounded-full">
-                                    <i class="fas fa-clock text-red-600 text-2xl"></i>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Create New Link -->
-                    <div class="bg-white rounded-xl shadow-lg p-8 mb-8">
-                        <h3 class="text-2xl font-bold text-gray-800 mb-6">
-                            <i class="fas fa-plus-circle gradient-bg bg-clip-text text-transparent"></i> Create New Link
-                        </h3>
-                        
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div class="md:col-span-2">
-                                <label class="block text-gray-700 font-semibold mb-2">
-                                    <i class="fas fa-globe"></i> Original URL
-                                </label>
-                                <input type="url" id="originalUrl" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="https://example.com/very-long-url">
-                            </div>
-
-                            <div>
-                                <label class="block text-gray-700 font-semibold mb-2">
-                                    <i class="fas fa-tag"></i> Custom Alias (Optional)
-                                </label>
-                                <input type="text" id="customAlias" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="my-custom-link">
-                            </div>
-
-                            <div>
-                                <label class="block text-gray-700 font-semibold mb-2">
-                                    <i class="fas fa-clock"></i> Expiry Time
-                                </label>
-                                <select id="expiryTime" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
-                                    <option value="">No Expiry</option>
-                                    <option value="5">5 Minutes</option>
-                                    <option value="10">10 Minutes</option>
-                                    <option value="30">30 Minutes</option>
-                                    <option value="60">1 Hour</option>
-                                    <option value="1440">24 Hours</option>
-                                    <option value="10080">7 Days</option>
-                                    <option value="custom">Custom Date/Time</option>
-                                </select>
-                            </div>
-
-                            <div id="customExpiryContainer" class="hidden md:col-span-2">
-                                <label class="block text-gray-700 font-semibold mb-2">
-                                    <i class="fas fa-calendar-alt"></i> Custom Expiry Date & Time
-                                </label>
-                                <input type="datetime-local" id="customExpiryDate" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
-                            </div>
-
-                            <div>
-                                <label class="block text-gray-700 font-semibold mb-2">
-                                    <i class="fas fa-lock"></i> Password Protection (Optional)
-                                </label>
-                                <input type="password" id="linkPassword" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="Set a password">
-                            </div>
-
-                            <div>
-                                <label class="block text-gray-700 font-semibold mb-2">
-                                    <i class="fas fa-image"></i> Link Title (Optional)
-                                </label>
-                                <input type="text" id="linkTitle" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="My Link">
-                            </div>
-                        </div>
-
-                        <button onclick="createLink()" class="mt-6 gradient-bg text-white px-8 py-3 rounded-lg font-semibold hover:opacity-90 transition duration-300 pulse-animation">
-                            <i class="fas fa-magic mr-2"></i> Generate Short Link
-                        </button>
-                    </div>
-
-                    <!-- Links List -->
-                    <div class="bg-white rounded-xl shadow-lg p-4 md:p-8">
-                        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 space-y-4 md:space-y-0">
-                            <h3 class="text-xl md:text-2xl font-bold text-gray-800">
-                                <i class="fas fa-list"></i> Your Links
-                            </h3>
-                            <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3 w-full md:w-auto">
-                                <button id="deleteSelectedBtn" onclick="deleteSelectedLinks()" class="hidden bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition font-semibold text-sm md:text-base">
-                                    <i class="fas fa-trash-alt mr-2"></i> Delete Selected (<span id="selectedCount">0</span>)
-                                </button>
-                                <button onclick="exportLinks()" class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition font-semibold text-sm md:text-base">
-                                    <i class="fas fa-download mr-2"></i> Export
-                                </button>
-                                <a href="/links" class="gradient-bg text-white px-4 py-2 rounded-lg hover:opacity-90 transition font-semibold text-center text-sm md:text-base">
-                                    <i class="fas fa-list mr-2"></i> View All
-                                </a>
-                            </div>
-                        </div>
-
-                        <div class="space-y-4 custom-scrollbar max-h-96 overflow-y-auto" id="linksList">
-                            ${renderLinksList(userLinks)}
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-
-        // Selected links state
-        let selectedLinkIds = new Set();
-
-        function renderLinksList(links) {
-            if (links.length === 0) {
-                return `
-                    <div class="text-center py-12 text-gray-500">
-                        <i class="fas fa-inbox text-6xl mb-4"></i>
-                        <p class="text-xl">No links created yet</p>
-                    </div>
-                `;
-            }
-
-            const selectAllChecked = selectedLinkIds.size === links.length && links.length > 0;
-            
-            return `
-                <!-- Select All Checkbox -->
-                <div class="flex items-center justify-between p-4 bg-purple-50 rounded-lg mb-4 border-2 border-purple-200">
-                    <label class="flex items-center space-x-3 cursor-pointer">
-                        <input 
-                            type="checkbox" 
-                            id="selectAll" 
-                            ${selectAllChecked ? 'checked' : ''} 
-                            onchange="toggleSelectAll(this.checked)"
-                            class="w-5 h-5 text-purple-600 rounded focus:ring-2 focus:ring-purple-500 cursor-pointer"
-                        >
-                        <span class="font-semibold text-purple-800">
-                            <i class="fas fa-check-double mr-2"></i>Select All Links
-                        </span>
-                    </label>
-                    <span class="text-sm text-purple-700 font-medium">
-                        ${selectedLinkIds.size} of ${links.length} selected
-                    </span>
-                </div>
-
-                <!-- Links -->
-                ${links.map(link => {
-                    const isExpired = checkLinkExpiry(link);
-                    const shortUrl = `${window.location.origin}/${link.shortCode}`;
-                    const isSelected = selectedLinkIds.has(link.id);
-                    
-                    return `
-                        <div class="border-2 ${isSelected ? 'border-purple-500 bg-purple-50' : 'border-gray-200 bg-gray-50'} rounded-lg p-4 link-card ${isExpired ? 'opacity-60' : ''} transition-all duration-200">
-                            <div class="flex items-start space-x-3">
-                                <!-- Checkbox -->
-                                <input 
-                                    type="checkbox" 
-                                    ${isSelected ? 'checked' : ''} 
-                                    onchange="toggleLinkSelection('${link.id}', this.checked)"
-                                    class="w-5 h-5 mt-1 text-purple-600 rounded focus:ring-2 focus:ring-purple-500 cursor-pointer"
-                                >
-                                
-                                <!-- Link Content -->
-                                <div class="flex-1">
-                                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center space-y-3 md:space-y-0">
-                                        <div class="flex-1">
-                                            <div class="flex items-center space-x-2 mb-2">
-                                                ${link.title ? `<h4 class="font-semibold text-gray-800">${link.title}</h4>` : ''}
-                                                ${isExpired ? '<span class="bg-red-500 text-white px-2 py-1 rounded text-xs">Expired</span>' : '<span class="bg-green-500 text-white px-2 py-1 rounded text-xs">Active</span>'}
-                                                ${link.password ? '<i class="fas fa-lock text-yellow-600" title="Password Protected"></i>' : ''}
-                                            </div>
-                                            <p class="text-sm text-gray-600 mb-1 break-all">
-                                                <i class="fas fa-link text-purple-600"></i> <strong>Short:</strong> 
-                                                <a href="#" onclick="openLink('${link.shortCode}')" class="text-purple-600 hover:underline">${shortUrl}</a>
-                                            </p>
-                                            <p class="text-xs text-gray-500 break-all">
-                                                <i class="fas fa-external-link-alt"></i> <strong>Original:</strong> ${link.originalUrl}
-                                            </p>
-                                            <div class="flex items-center space-x-4 mt-2 text-xs text-gray-600">
-                                                <span><i class="fas fa-mouse-pointer"></i> ${link.clicks || 0} clicks</span>
-                                                ${link.expiryTime ? `<span><i class="fas fa-clock"></i> Expires: ${new Date(link.expiryTime).toLocaleString()}</span>` : ''}
-                                            </div>
-                                        </div>
-                                        
-                                        <div class="flex items-center space-x-2">
-                                            <button onclick="copyToClipboard('${shortUrl}')" class="bg-blue-500 text-white px-3 py-2 rounded hover:bg-blue-600 transition" title="Copy">
-                                                <i class="fas fa-copy"></i>
-                                            </button>
-                                            <button onclick="showQRCode('${link.shortCode}')" class="bg-purple-500 text-white px-3 py-2 rounded hover:bg-purple-600 transition" title="QR Code">
-                                                <i class="fas fa-qrcode"></i>
-                                            </button>
-                                            <button onclick="viewLinkAnalytics('${link.id}')" class="bg-green-500 text-white px-3 py-2 rounded hover:bg-green-600 transition" title="Analytics">
-                                                <i class="fas fa-chart-line"></i>
-                                            </button>
-                                            <button onclick="editLink('${link.id}')" class="bg-yellow-500 text-white px-3 py-2 rounded hover:bg-yellow-600 transition" title="Edit">
-                                                <i class="fas fa-edit"></i>
-                                            </button>
-                                            <button onclick="deleteLink('${link.id}')" class="bg-red-500 text-white px-3 py-2 rounded hover:bg-red-600 transition" title="Delete">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                }).join('')}
-            `;
-        }
-
-        function toggleLinkSelection(linkId, isChecked) {
-            if (isChecked) {
-                selectedLinkIds.add(linkId);
-            } else {
-                selectedLinkIds.delete(linkId);
-            }
-            updateDeleteButton();
-        }
-
-        function toggleSelectAll(isChecked) {
-            const userLinks = APP_STATE.links.filter(l => l.userId === APP_STATE.currentUser.id);
-            
-            if (isChecked) {
-                userLinks.forEach(link => selectedLinkIds.add(link.id));
-            } else {
-                selectedLinkIds.clear();
-            }
-            
-            render();
-        }
-
-        function updateDeleteButton() {
-            const deleteBtn = document.getElementById('deleteSelectedBtn');
-            const countSpan = document.getElementById('selectedCount');
-            
-            if (deleteBtn && countSpan) {
-                countSpan.textContent = selectedLinkIds.size;
-                
-                if (selectedLinkIds.size > 0) {
-                    deleteBtn.classList.remove('hidden');
-                } else {
-                    deleteBtn.classList.add('hidden');
-                }
-            }
-        }
-
-        async function deleteSelectedLinks() {
-            if (selectedLinkIds.size === 0) {
-                showToast('No links selected', 'error');
-                return;
-            }
-
-            const count = selectedLinkIds.size;
-            const confirmed = confirm(`Are you sure you want to delete ${count} selected link${count > 1 ? 's' : ''}? This action cannot be undone.`);
-
-            if (confirmed) {
-                // Links are now handled by API, no need to update localStorage
-                selectedLinkIds.clear();
-                showToast(`Successfully deleted ${count} link${count > 1 ? 's' : ''}!`, 'success');
-                // Refresh links from API
-                await fetchUserLinks();
-                render();
+            } catch (e) {
+                showToast('Network error', 'error');
             }
         }
 
         async function createLink() {
             const originalUrl = document.getElementById('originalUrl').value;
-            const customAlias = document.getElementById('customAlias').value;
-            const expiryTime = document.getElementById('expiryTime').value;
-            const linkPassword = document.getElementById('linkPassword').value;
-            const linkTitle = document.getElementById('linkTitle').value;
-
-            if (!originalUrl) {
-                showToast('Please enter a URL', 'error');
-                return;
-            }
-
-            if (!isValidURL(originalUrl)) {
-                showToast('Please enter a valid URL', 'error');
-                return;
-            }
-
-            if (isMaliciousURL(originalUrl)) {
-                showToast('This URL has been flagged as potentially malicious and cannot be shortened', 'error');
-                return;
-            }
-
-            let expiryDateTime = null;
-            if (expiryTime === 'custom') {
-                const customDate = document.getElementById('customExpiryDate').value;
-                if (!customDate) {
-                    showToast('Please select a custom expiry date', 'error');
-                    return;
-                }
-                expiryDateTime = new Date(customDate).toISOString();
-            } else if (expiryTime) {
-                expiryDateTime = new Date(Date.now() + parseInt(expiryTime) * 60000).toISOString();
-            }
+            if (!isValidURL(originalUrl)) return showToast('Please enter a URL', 'error');
 
             try {
-                const response = await fetch('/api/links/create', {
+                const res = await fetch('/api/links/create', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -939,797 +556,158 @@
                     },
                     body: JSON.stringify({
                         originalUrl,
-                        customAlias,
-                        title: linkTitle,
-                        password: linkPassword,
-                        expiryTime: expiryDateTime
+                        customAlias: document.getElementById('customAlias').value,
+                        expiryMinutes: document.getElementById('expiryTime').value
                     })
                 });
+                const data = await res.json();
 
-                const data = await response.json();
-
-                if (response.ok && data.success) {
-                    showToast('Link created successfully!', 'success');
-
-                    // Add the new link to APP_STATE immediately for instant UI update
-                    if (!APP_STATE.links) APP_STATE.links = [];
-                    APP_STATE.links.unshift(data.link); // Add to beginning of array
-
-                    // Clear form
-                    document.getElementById('originalUrl').value = '';
-                    document.getElementById('customAlias').value = '';
-                    document.getElementById('expiryTime').value = '';
-                    document.getElementById('linkPassword').value = '';
-                    document.getElementById('linkTitle').value = '';
-
-                    // Re-render to show the new link immediately
-                    render();
+                if (res.ok) {
+                    APP_STATE.links.unshift(data.link);
+                    render(); // Real-time update
+                    showCreatedModal(data.link);
                 } else {
                     showToast(data.error || 'Failed to create link', 'error');
                 }
-            } catch (error) {
-                console.error('Create link error:', error);
-                showToast('Network error. Please try again.', 'error');
+            } catch (e) {
+                showToast('Network error', 'error');
             }
         }
 
-        async function deleteLink(linkId) {
-            if (confirm('Are you sure you want to delete this link?')) {
-                try {
-                    const response = await fetch(`/api/links/${linkId}`, {
-                        method: 'DELETE',
-                        headers: {
-                            'Authorization': `Bearer ${localStorage.getItem('authToken')}`
-                        }
-                    });
-
-                    const data = await response.json();
-
-                    if (response.ok && data.success) {
-                        APP_STATE.links = APP_STATE.links.filter(l => l.id !== linkId);
-                        showToast('Link deleted', 'info');
-                        render();
-                    } else {
-                        showToast(data.error || 'Failed to delete link', 'error');
-                    }
-                } catch (error) {
-                    console.error('Delete link error:', error);
-                    showToast('Network error. Please try again.', 'error');
-                }
-            }
-        }
-
-        function copyToClipboard(text) {
-            navigator.clipboard.writeText(text).then(() => {
-                showToast('Copied to clipboard!', 'success');
-            });
-        }
-
-        function exportLinks() {
-            const userLinks = APP_STATE.links.filter(l => l.userId === APP_STATE.currentUser.id);
-            const csvContent = [
-                ['Title', 'Short URL', 'Original URL', 'Clicks', 'Created', 'Expires', 'Status'],
-                ...userLinks.map(link => [
-                    link.title || '',
-                    `${window.location.origin}/${link.shortCode}`,
-                    link.originalUrl,
-                    link.clicks || 0,
-                    new Date(link.createdAt).toLocaleDateString(),
-                    link.expiryTime ? new Date(link.expiryTime).toLocaleDateString() : 'Never',
-                    checkLinkExpiry(link) ? 'Expired' : 'Active'
-                ])
-            ].map(row => row.map(cell => `"${cell}"`).join(',')).join('\n');
-
-            const blob = new Blob([csvContent], { type: 'text/csv' });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'links-export.csv';
-            a.click();
-            window.URL.revokeObjectURL(url);
-            showToast('Links exported successfully!', 'success');
-        }
-
-        function showQRCode(shortCode) {
-            const link = APP_STATE.links.find(l => l.shortCode === shortCode);
-            const shortUrl = `${window.location.origin}/${shortCode}`;
-            
+        function showCreatedModal(link) {
+            const shortUrl = `${window.location.origin}/${link.shortCode}`;
             const modal = document.createElement('div');
-            modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+            modal.className = 'fixed inset-0 bg-black/60 z-50 flex items-center justify-center modal-wrapper fade-in';
             modal.innerHTML = `
-                <div class="bg-white rounded-2xl p-8 max-w-md w-full mx-4 fade-in">
-                    <div class="text-center">
-                        <h3 class="text-2xl font-bold text-gray-800 mb-4">QR Code</h3>
-                        <div id="qrcodeContainer" class="flex justify-center mb-4"></div>
-                        <p class="text-sm text-gray-600 mb-2 break-all">${shortUrl}</p>
-                        <button onclick="this.closest('.fixed').remove()" class="gradient-bg text-white px-6 py-2 rounded-lg hover:opacity-90 transition">
+                <div class="bg-white rounded-2xl p-6 md:p-8 w-full max-w-md mx-4 modal-content shadow-2xl">
+                    <div class="text-center mb-6">
+                        <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-check text-2xl text-green-600"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-gray-800">Link Created!</h3>
+                    </div>
+                    
+                    <div class="bg-gray-50 p-4 rounded-xl border border-gray-200 mb-6 break-all text-center font-medium text-purple-600 text-lg">
+                        ${shortUrl}
+                    </div>
+
+                    <div class="flex justify-center mb-6" id="newQrCode"></div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <button onclick="copyToClipboard('${shortUrl}')" class="bg-blue-600 text-white py-3 rounded-xl font-bold hover:bg-blue-700 transition">
+                            <i class="fas fa-copy mr-2"></i> Copy
+                        </button>
+                        <button onclick="this.closest('.fixed').remove()" class="bg-gray-200 text-gray-800 py-3 rounded-xl font-bold hover:bg-gray-300 transition">
                             Close
                         </button>
                     </div>
                 </div>
             `;
             document.body.appendChild(modal);
-            
-            new QRCode(document.getElementById('qrcodeContainer'), {
-                text: shortUrl,
-                width: 256,
-                height: 256
-            });
+            new QRCode(document.getElementById('newQrCode'), { text: shortUrl, width: 128, height: 128 });
         }
 
-        function openLink(shortCode) {
-            // Use API redirect instead of local logic
-            window.open(`/${shortCode}`, '_blank');
-            showToast('Redirecting...', 'info');
+        async function deleteLink(id) {
+            if (!confirm('Delete this link?')) return;
+            try {
+                const res = await fetch(`/api/links?id=${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${localStorage.getItem('authToken')}` }
+                });
+                if (res.ok) {
+                    APP_STATE.links = APP_STATE.links.filter(l => l.id !== id);
+                    render(); // Real-time update
+                    showToast('Link deleted');
+                }
+            } catch (e) {
+                showToast('Failed to delete', 'error');
+            }
         }
 
-        async function editLink(linkId) {
-            const link = APP_STATE.links.find(l => l.id === linkId);
-            if (!link) return;
+        async function fetchUserLinks() {
+            try {
+                const res = await fetch('/api/links', {
+                    headers: { 'Authorization': `Bearer ${localStorage.getItem('authToken')}` }
+                });
+                const data = await res.json();
+                if (res.ok) APP_STATE.links = data.links;
+            } catch (e) {
+                console.error(e);
+            }
+        }
 
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text);
+            showToast('Copied to clipboard!');
+        }
+
+        function showQRCode(code) {
+            const url = `${window.location.origin}/${code}`;
             const modal = document.createElement('div');
-            modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+            modal.className = 'fixed inset-0 bg-black/60 z-50 flex items-center justify-center modal-wrapper fade-in';
             modal.innerHTML = `
-                <div class="bg-white rounded-2xl p-8 max-w-md w-full mx-4 fade-in">
-                    <div class="text-center mb-6">
-                        <h3 class="text-2xl font-bold text-gray-800">
-                            <i class="fas fa-edit gradient-bg bg-clip-text text-transparent"></i> Edit Link
-                        </h3>
-                        <p class="text-sm text-gray-600">${window.location.origin}/${link.shortCode}</p>
-                    </div>
-
-                    <div class="space-y-4">
-                        <div>
-                            <label class="block text-gray-700 font-semibold mb-2">
-                                <i class="fas fa-tag"></i> Title (Optional)
-                            </label>
-                            <input type="text" id="editTitle" value="${link.title || ''}" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="Link title">
-                        </div>
-
-                        <div>
-                            <label class="block text-gray-700 font-semibold mb-2">
-                                <i class="fas fa-lock"></i> Password (Optional)
-                            </label>
-                            <input type="password" id="editPassword" value="${link.password || ''}" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="Set a password">
-                        </div>
-
-                        <div>
-                            <label class="block text-gray-700 font-semibold mb-2">
-                                <i class="fas fa-clock"></i> Expiry Time
-                            </label>
-                            <select id="editExpiryTime" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
-                                <option value="">No Expiry</option>
-                                <option value="5">5 Minutes</option>
-                                <option value="10">10 Minutes</option>
-                                <option value="30">30 Minutes</option>
-                                <option value="60">1 Hour</option>
-                                <option value="1440">24 Hours</option>
-                                <option value="10080">7 Days</option>
-                                <option value="custom">Custom Date/Time</option>
-                            </select>
-                        </div>
-
-                        <div id="editCustomExpiryContainer" class="hidden">
-                            <label class="block text-gray-700 font-semibold mb-2">
-                                <i class="fas fa-calendar-alt"></i> Custom Expiry Date & Time
-                            </label>
-                            <input type="datetime-local" id="editCustomExpiryDate" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
-                        </div>
-                    </div>
-
-                    <div class="flex space-x-3 mt-6">
-                        <button onclick="this.closest('.fixed').remove()" class="flex-1 bg-gray-500 text-white px-6 py-2 rounded-lg hover:bg-gray-600 transition">
-                            Cancel
-                        </button>
-                        <button onclick="saveLinkEdit('${linkId}')" class="flex-1 gradient-bg text-white px-6 py-2 rounded-lg hover:opacity-90 transition">
-                            <i class="fas fa-save mr-2"></i> Save Changes
-                        </button>
-                    </div>
+                <div class="bg-white rounded-2xl p-8 w-full max-w-sm mx-4 modal-content shadow-2xl text-center">
+                    <h3 class="text-xl font-bold mb-6">QR Code</h3>
+                    <div id="qrDisplay" class="flex justify-center mb-6"></div>
+                    <button onclick="this.closest('.fixed').remove()" class="w-full bg-gray-200 text-gray-800 py-3 rounded-xl font-bold">Close</button>
                 </div>
             `;
             document.body.appendChild(modal);
-
-            // Set current expiry value
-            const expirySelect = document.getElementById('editExpiryTime');
-            if (link.expiryTime) {
-                const expiryDate = new Date(link.expiryTime);
-                const now = new Date();
-                const diffMinutes = Math.floor((expiryDate - now) / (1000 * 60));
-
-                if (diffMinutes <= 5) expirySelect.value = '5';
-                else if (diffMinutes <= 10) expirySelect.value = '10';
-                else if (diffMinutes <= 30) expirySelect.value = '30';
-                else if (diffMinutes <= 60) expirySelect.value = '60';
-                else if (diffMinutes <= 1440) expirySelect.value = '1440';
-                else if (diffMinutes <= 10080) expirySelect.value = '10080';
-                else {
-                    expirySelect.value = 'custom';
-                    document.getElementById('editCustomExpiryContainer').classList.remove('hidden');
-                    document.getElementById('editCustomExpiryDate').value = expiryDate.toISOString().slice(0, 16);
-                }
-            }
-
-            // Add event listener for custom expiry selection
-            expirySelect.addEventListener('change', function() {
-                const customContainer = document.getElementById('editCustomExpiryContainer');
-                if (this.value === 'custom') {
-                    customContainer.classList.remove('hidden');
-                } else {
-                    customContainer.classList.add('hidden');
-                }
-            });
+            new QRCode(document.getElementById('qrDisplay'), { text: url, width: 200, height: 200 });
         }
 
-        async function saveLinkEdit(linkId) {
-            const title = document.getElementById('editTitle').value;
-            const password = document.getElementById('editPassword').value;
-            const expiryTime = document.getElementById('editExpiryTime').value;
-
-            let expiryDateTime = null;
-            if (expiryTime === 'custom') {
-                const customDate = document.getElementById('editCustomExpiryDate').value;
-                if (!customDate) {
-                    showToast('Please select a custom expiry date', 'error');
-                    return;
-                }
-                expiryDateTime = new Date(customDate).toISOString();
-            } else if (expiryTime) {
-                expiryDateTime = new Date(Date.now() + parseInt(expiryTime) * 60000).toISOString();
+        // ==================== INIT ====================
+        function render() {
+            const app = document.getElementById('app');
+            if (!APP_STATE.currentUser) {
+                app.innerHTML = APP_STATE.currentView === 'signup' ? renderSignup() : renderLogin();
+            } else {
+                app.innerHTML = APP_STATE.currentView === 'links' ? renderLinksPage() : renderDashboard();
             }
-
-            try {
-                const response = await fetch(`/api/links/${linkId}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${localStorage.getItem('authToken')}`
-                    },
-                    body: JSON.stringify({
-                        title,
-                        password,
-                        expiryTime: expiryDateTime
-                    })
-                });
-
-                const data = await response.json();
-
-                if (response.ok && data.success) {
-                    // Update the link in APP_STATE
-                    const linkIndex = APP_STATE.links.findIndex(l => l.id === linkId);
-                    if (linkIndex !== -1) {
-                        APP_STATE.links[linkIndex] = { ...APP_STATE.links[linkIndex], ...data.link };
-                    }
-
-                    showToast('Link updated successfully!', 'success');
-                    document.querySelector('.fixed').remove();
-                    render();
-                } else {
-                    showToast(data.error || 'Failed to update link', 'error');
-                }
-            } catch (error) {
-                console.error('Update link error:', error);
-                showToast('Network error. Please try again.', 'error');
-            }
+            updateNavigation();
         }
 
-        // ==================== ANALYTICS ====================
-        function renderAnalytics() {
-            const userLinks = APP_STATE.links.filter(l => l.userId === APP_STATE.currentUser.id);
-            
+        function switchToDashboard() { APP_STATE.currentView = 'dashboard'; render(); }
+        function switchToLinks() { APP_STATE.currentView = 'links'; render(); }
+        function switchToLogin() { APP_STATE.currentView = 'login'; render(); }
+        function switchToSignup() { APP_STATE.currentView = 'signup'; render(); }
+        function handleLogout() {
+            APP_STATE.currentUser = null;
+            localStorage.removeItem('authToken');
+            switchToLogin();
+        }
+
+        function renderLinksPage() {
             return `
                 <div class="fade-in">
                     <div class="flex justify-between items-center mb-6">
-                        <h2 class="text-3xl font-bold text-gray-800">
-                            <i class="fas fa-chart-bar gradient-bg bg-clip-text text-transparent"></i> Analytics Dashboard
-                        </h2>
-                        <button onclick="switchToDashboard()" class="gradient-bg text-white px-4 py-2 rounded-lg hover:opacity-90 transition">
-                            <i class="fas fa-arrow-left mr-2"></i> Back to Dashboard
-                        </button>
+                        <h2 class="text-2xl font-bold text-gray-800">All Links</h2>
+                        <button onclick="switchToDashboard()" class="text-purple-600 font-medium">Back to Dashboard</button>
                     </div>
-
-                    <!-- Overall Stats -->
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                        ${renderOverallStats(userLinks)}
-                    </div>
-
-                    <!-- Charts -->
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-                        <div class="bg-white rounded-xl shadow-lg p-6">
-                            <h3 class="text-xl font-bold text-gray-800 mb-4">Clicks Over Time</h3>
-                            <canvas id="clicksChart"></canvas>
-                        </div>
-                        
-                        <div class="bg-white rounded-xl shadow-lg p-6">
-                            <h3 class="text-xl font-bold text-gray-800 mb-4">Device Distribution</h3>
-                            <canvas id="deviceChart"></canvas>
-                        </div>
-                    </div>
-
-                    <!-- Top Links -->
-                    <div class="bg-white rounded-xl shadow-lg p-6">
-                        <h3 class="text-xl font-bold text-gray-800 mb-4">Top Performing Links</h3>
-                        ${renderTopLinks(userLinks)}
+                    <div class="space-y-4">
+                        ${APP_STATE.links.map(link => renderLinkCard(link)).join('')}
                     </div>
                 </div>
             `;
         }
 
-        function renderOverallStats(links) {
-            const totalClicks = links.reduce((sum, l) => sum + (l.clicks || 0), 0);
-            const avgCTR = links.length > 0 ? (totalClicks / links.length).toFixed(2) : 0;
-            const mostClicked = links.reduce((max, l) => (l.clicks || 0) > (max.clicks || 0) ? l : max, {});
-
-            return `
-                <div class="bg-gradient-to-br from-purple-500 to-purple-700 rounded-xl shadow-lg p-6 text-white">
-                    <i class="fas fa-mouse-pointer text-3xl mb-2"></i>
-                    <p class="text-sm font-semibold opacity-90">Total Clicks</p>
-                    <p class="text-4xl font-bold mt-2">${totalClicks}</p>
-                </div>
-                
-                <div class="bg-gradient-to-br from-blue-500 to-blue-700 rounded-xl shadow-lg p-6 text-white">
-                    <i class="fas fa-chart-line text-3xl mb-2"></i>
-                    <p class="text-sm font-semibold opacity-90">Average CTR</p>
-                    <p class="text-4xl font-bold mt-2">${avgCTR}</p>
-                </div>
-                
-                <div class="bg-gradient-to-br from-green-500 to-green-700 rounded-xl shadow-lg p-6 text-white">
-                    <i class="fas fa-star text-3xl mb-2"></i>
-                    <p class="text-sm font-semibold opacity-90">Most Clicked</p>
-                    <p class="text-2xl font-bold mt-2 truncate">${mostClicked.shortCode || 'N/A'}</p>
-                    <p class="text-sm opacity-90">${mostClicked.clicks || 0} clicks</p>
-                </div>
-            `;
-        }
-
-        function renderTopLinks(links) {
-            const sorted = links.sort((a, b) => (b.clicks || 0) - (a.clicks || 0)).slice(0, 5);
-            
-            if (sorted.length === 0) {
-                return '<p class="text-gray-500 text-center py-8">No data available</p>';
-            }
-
-            return `
-                <div class="space-y-3">
-                    ${sorted.map((link, index) => `
-                        <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                            <div class="flex items-center space-x-4">
-                                <div class="bg-purple-100 text-purple-700 w-8 h-8 rounded-full flex items-center justify-center font-bold">
-                                    ${index + 1}
-                                </div>
-                                <div>
-                                    <p class="font-semibold text-gray-800">${link.title || link.shortCode}</p>
-                                    <p class="text-sm text-gray-500">${window.location.origin}/${link.shortCode}</p>
-                                </div>
-                            </div>
-                            <div class="text-right">
-                                <p class="text-2xl font-bold text-purple-600">${link.clicks || 0}</p>
-                                <p class="text-xs text-gray-500">clicks</p>
-                            </div>
-                        </div>
-                    `).join('')}
-                </div>
-            `;
-        }
-
-        function viewLinkAnalytics(linkId) {
-            const link = APP_STATE.links.find(l => l.id === linkId);
-            if (!link) return;
-
-            const analytics = link.analytics || [];
-            const devices = analytics.reduce((acc, a) => {
-                acc[a.device] = (acc[a.device] || 0) + 1;
-                return acc;
-            }, {});
-
-            const modal = document.createElement('div');
-            modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-y-auto';
-            modal.innerHTML = `
-                <div class="bg-white rounded-2xl p-8 max-w-4xl w-full mx-4 my-8 fade-in">
-                    <h3 class="text-2xl font-bold text-gray-800 mb-6">
-                        <i class="fas fa-chart-pie gradient-bg bg-clip-text text-transparent"></i> 
-                        Link Analytics: ${link.title || link.shortCode}
-                    </h3>
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                        <div class="bg-purple-50 p-4 rounded-lg text-center">
-                            <i class="fas fa-mouse-pointer text-purple-600 text-2xl mb-2"></i>
-                            <p class="text-sm text-gray-600">Total Clicks</p>
-                            <p class="text-3xl font-bold text-purple-700">${link.clicks || 0}</p>
-                        </div>
-                        <div class="bg-blue-50 p-4 rounded-lg text-center">
-                            <i class="fas fa-desktop text-blue-600 text-2xl mb-2"></i>
-                            <p class="text-sm text-gray-600">Desktop</p>
-                            <p class="text-3xl font-bold text-blue-700">${devices['Desktop'] || 0}</p>
-                        </div>
-                        <div class="bg-green-50 p-4 rounded-lg text-center">
-                            <i class="fas fa-mobile-alt text-green-600 text-2xl mb-2"></i>
-                            <p class="text-sm text-gray-600">Mobile</p>
-                            <p class="text-3xl font-bold text-green-700">${devices['Mobile'] || 0}</p>
-                        </div>
-                    </div>
-
-                    <div class="mb-6">
-                        <h4 class="font-semibold text-gray-800 mb-3">Recent Activity</h4>
-                        <div class="max-h-64 overflow-y-auto custom-scrollbar">
-                            ${analytics.length > 0 ? analytics.slice(-10).reverse().map(a => `
-                                <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg mb-2">
-                                    <div class="flex items-center space-x-3">
-                                        <i class="fas fa-${a.device === 'Mobile' ? 'mobile-alt' : a.device === 'Tablet' ? 'tablet-alt' : 'desktop'} text-gray-600"></i>
-                                        <div>
-                                            <p class="text-sm font-semibold text-gray-800">${a.device}</p>
-                                            <p class="text-xs text-gray-500">${new Date(a.timestamp).toLocaleString()}</p>
-                                        </div>
-                                    </div>
-                                    <span class="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded">${a.referrer}</span>
-                                </div>
-                            `).join('') : '<p class="text-gray-500 text-center py-4">No analytics data yet</p>'}
-                        </div>
-                    </div>
-                    
-                    <button onclick="this.closest('.fixed').remove()" class="gradient-bg text-white px-6 py-2 rounded-lg hover:opacity-90 transition">
-                        Close
-                    </button>
-                </div>
-            `;
-            document.body.appendChild(modal);
-        }
-
-        function initializeCharts() {
-            const userLinks = APP_STATE.links.filter(l => l.userId === APP_STATE.currentUser.id);
-            
-            // Clicks Over Time Chart
-            const clicksCtx = document.getElementById('clicksChart');
-            if (clicksCtx) {
-                const last7Days = Array.from({length: 7}, (_, i) => {
-                    const d = new Date();
-                    d.setDate(d.getDate() - (6 - i));
-                    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-                });
-
-                new Chart(clicksCtx, {
-                    type: 'line',
-                    data: {
-                        labels: last7Days,
-                        datasets: [{
-                            label: 'Clicks',
-                            data: Array(7).fill(0).map((_, i) => Math.floor(Math.random() * 50)),
-                            borderColor: '#667eea',
-                            backgroundColor: 'rgba(102, 126, 234, 0.1)',
-                            tension: 0.4,
-                            fill: true
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: true,
-                        plugins: {
-                            legend: { display: false }
-                        }
-                    }
-                });
-            }
-
-            // Device Chart
-            const deviceCtx = document.getElementById('deviceChart');
-            if (deviceCtx) {
-                const allAnalytics = userLinks.flatMap(l => l.analytics || []);
-                const devices = allAnalytics.reduce((acc, a) => {
-                    acc[a.device] = (acc[a.device] || 0) + 1;
-                    return acc;
-                }, {});
-
-                new Chart(deviceCtx, {
-                    type: 'doughnut',
-                    data: {
-                        labels: Object.keys(devices).length > 0 ? Object.keys(devices) : ['Desktop', 'Mobile', 'Tablet'],
-                        datasets: [{
-                            data: Object.keys(devices).length > 0 ? Object.values(devices) : [45, 35, 20],
-                            backgroundColor: ['#667eea', '#764ba2', '#f093fb']
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: true
-                    }
-                });
-            }
-        }
-
-        // ==================== SETTINGS ====================
-        function renderSettings() {
-            return `
-                <div class="max-w-4xl mx-auto fade-in">
-                    <div class="flex justify-between items-center mb-6">
-                        <h2 class="text-3xl font-bold text-gray-800">
-                            <i class="fas fa-cog gradient-bg bg-clip-text text-transparent"></i> Settings
-                        </h2>
-                        <button onclick="switchToDashboard()" class="gradient-bg text-white px-4 py-2 rounded-lg hover:opacity-90 transition">
-                            <i class="fas fa-arrow-left mr-2"></i> Back
-                        </button>
-                    </div>
-
-                    <!-- Branding Settings -->
-                    <div class="bg-white rounded-xl shadow-lg p-8 mb-6">
-                        <h3 class="text-xl font-bold text-gray-800 mb-4">
-                            <i class="fas fa-palette"></i> Branding
-                        </h3>
-                        <div class="space-y-4">
-                            <div>
-                                <label class="block text-gray-700 font-semibold mb-2">Brand Name</label>
-                                <input type="text" id="brandName" value="${APP_STATE.settings.brandName}" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
-                            </div>
-                            <div>
-                                <label class="block text-gray-700 font-semibold mb-2">Brand Color</label>
-                                <input type="color" id="brandColor" value="${APP_STATE.settings.brandColor}" class="w-full h-12 border border-gray-300 rounded-lg cursor-pointer">
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Account Settings -->
-                    <div class="bg-white rounded-xl shadow-lg p-8 mb-6">
-                        <h3 class="text-xl font-bold text-gray-800 mb-4">
-                            <i class="fas fa-user-cog"></i> Account Information
-                        </h3>
-                        <div class="space-y-4">
-                            <div>
-                                <label class="block text-gray-700 font-semibold mb-2">Name</label>
-                                <input type="text" value="${APP_STATE.currentUser.name}" class="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-50" readonly>
-                            </div>
-                            <div>
-                                <label class="block text-gray-700 font-semibold mb-2">Email</label>
-                                <input type="email" value="${APP_STATE.currentUser.email}" class="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-50" readonly>
-                            </div>
-                            <div>
-                                <label class="block text-gray-700 font-semibold mb-2">Member Since</label>
-                                <input type="text" value="${new Date(APP_STATE.currentUser.createdAt).toLocaleDateString()}" class="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-50" readonly>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- API Information -->
-                    <div class="bg-white rounded-xl shadow-lg p-8">
-                        <h3 class="text-xl font-bold text-gray-800 mb-4">
-                            <i class="fas fa-code"></i> API Access
-                        </h3>
-                        <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
-                            <p class="text-sm text-gray-600 mb-2">Your API Token:</p>
-                            <code class="block bg-gray-800 text-green-400 p-3 rounded font-mono text-sm break-all">${APP_STATE.currentUser.token}</code>
-                            <button onclick="copyToClipboard('${APP_STATE.currentUser.token}')" class="mt-3 bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-600 transition">
-                                <i class="fas fa-copy mr-2"></i> Copy Token
-                            </button>
-                        </div>
-                        <p class="text-xs text-gray-500 mt-3">
-                            <i class="fas fa-info-circle"></i> Use this token for API integration to programmatically shorten links.
-                        </p>
-                    </div>
-
-                    <button onclick="saveSettings()" class="mt-6 gradient-bg text-white px-8 py-3 rounded-lg font-semibold hover:opacity-90 transition">
-                        <i class="fas fa-save mr-2"></i> Save Settings
-                    </button>
-                </div>
-            `;
-        }
-
-        function saveSettings() {
-            const brandName = document.getElementById('brandName').value;
-            const brandColor = document.getElementById('brandColor').value;
-
-            APP_STATE.settings.brandName = brandName;
-            APP_STATE.settings.brandColor = brandColor;
-            
-            saveToLocalStorage();
-            document.getElementById('brandName').textContent = brandName;
-            
-            showToast('Settings saved successfully!', 'success');
-        }
-
-        // ==================== NAVIGATION ====================
-        function updateNavigation() {
-            const navButtons = document.getElementById('navButtons');
-            const mobileNavButtons = document.getElementById('mobileNavButtons');
-
-            if (APP_STATE.currentUser) {
-                navButtons.innerHTML = `
-                    <button onclick="switchToDashboard()" class="text-white hover:text-purple-200 transition">
-                        <i class="fas fa-th-large mr-1"></i> Dashboard
-                    </button>
-                    <button onclick="switchToLinks()" class="text-white hover:text-purple-200 transition">
-                        <i class="fas fa-list mr-1"></i> Link List
-                    </button>
-                    <button onclick="switchToAnalytics()" class="text-white hover:text-purple-200 transition">
-                        <i class="fas fa-chart-bar mr-1"></i> Analytics
-                    </button>
-                    <button onclick="switchToSettings()" class="text-white hover:text-purple-200 transition">
-                        <i class="fas fa-cog mr-1"></i> Settings
-                    </button>
-                    <button onclick="handleLogout()" class="bg-white text-purple-600 px-4 py-2 rounded-lg hover:bg-purple-100 transition">
-                        <i class="fas fa-sign-out-alt mr-1"></i> Logout
-                    </button>
-                `;
-
-                mobileNavButtons.innerHTML = `
-                    <button onclick="switchToDashboard(); closeMobileMenu()" class="w-full text-left text-gray-700 hover:bg-purple-50 px-4 py-3 rounded-lg transition">
-                        <i class="fas fa-th-large mr-2"></i> Dashboard
-                    </button>
-                    <button onclick="switchToLinks(); closeMobileMenu()" class="w-full text-left text-gray-700 hover:bg-purple-50 px-4 py-3 rounded-lg transition">
-                        <i class="fas fa-list mr-2"></i> Link List
-                    </button>
-                    <button onclick="switchToAnalytics(); closeMobileMenu()" class="w-full text-left text-gray-700 hover:bg-purple-50 px-4 py-3 rounded-lg transition">
-                        <i class="fas fa-chart-bar mr-2"></i> Analytics
-                    </button>
-                    <button onclick="switchToSettings(); closeMobileMenu()" class="w-full text-left text-gray-700 hover:bg-purple-50 px-4 py-3 rounded-lg transition">
-                        <i class="fas fa-cog mr-2"></i> Settings
-                    </button>
-                    <button onclick="handleLogout(); closeMobileMenu()" class="w-full text-left text-red-600 hover:bg-red-50 px-4 py-3 rounded-lg transition">
-                        <i class="fas fa-sign-out-alt mr-2"></i> Logout
-                    </button>
-                `;
-            } else {
-                navButtons.innerHTML = '';
-                mobileNavButtons.innerHTML = '';
-            }
-
-            // Add mobile menu event listeners
-            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
-            const mobileMenuOverlay = document.getElementById('mobileMenuOverlay');
-            const closeMobileMenuBtn = document.getElementById('closeMobileMenu');
-
-            if (mobileMenuBtn) {
-                mobileMenuBtn.addEventListener('click', toggleMobileMenu);
-            }
-
-            if (closeMobileMenuBtn) {
-                closeMobileMenuBtn.addEventListener('click', closeMobileMenu);
-            }
-
-            if (mobileMenuOverlay) {
-                mobileMenuOverlay.addEventListener('click', function(e) {
-                    if (e.target === mobileMenuOverlay) {
-                        closeMobileMenu();
-                    }
-                });
-            }
-        }
-
-        function toggleMobileMenu() {
-            const mobileMenuOverlay = document.getElementById('mobileMenuOverlay');
-            const mobileMenuContent = document.querySelector('.mobile-menu-content');
-
-            if (mobileMenuOverlay.classList.contains('active')) {
-                closeMobileMenu();
-            } else {
-                mobileMenuOverlay.classList.add('active');
-                mobileMenuContent.classList.add('active');
-            }
-        }
-
-        function closeMobileMenu() {
-            const mobileMenuOverlay = document.getElementById('mobileMenuOverlay');
-            const mobileMenuContent = document.querySelector('.mobile-menu-content');
-
-            mobileMenuOverlay.classList.remove('active');
-            mobileMenuContent.classList.remove('active');
-        }
-
-        function switchToLogin() {
-            APP_STATE.currentView = 'login';
-            render();
-        }
-
-        function switchToSignup() {
-            APP_STATE.currentView = 'signup';
-            render();
-        }
-
-        async function switchToDashboard() {
-            APP_STATE.currentView = 'dashboard';
-            // Always fetch fresh links from API when switching to dashboard
-            await fetchUserLinks();
-            render();
-        }
-
-        function switchToLinks() {
-            APP_STATE.currentView = 'links';
-            render();
-        }
-
-        function switchToAnalytics() {
-            APP_STATE.currentView = 'analytics';
-            render();
-        }
-
-        function switchToSettings() {
-            APP_STATE.currentView = 'settings';
-            render();
-        }
-
-        // ==================== MAIN RENDER ====================
-        function render() {
-            const app = document.getElementById('app');
-            
-            if (!APP_STATE.currentUser) {
-                if (APP_STATE.currentView === 'signup') {
-                    app.innerHTML = renderSignup();
-                } else {
-                    app.innerHTML = renderLogin();
-                }
-            } else {
-                switch (APP_STATE.currentView) {
-                    case 'analytics':
-                        app.innerHTML = renderAnalytics();
-                        setTimeout(initializeCharts, 100);
-                        break;
-                    case 'settings':
-                        app.innerHTML = renderSettings();
-                        break;
-                    default:
-                        app.innerHTML = renderDashboard();
-                }
-            }
-            
-            updateNavigation();
-            
-            // Add event listener for custom expiry selection
-            const expirySelect = document.getElementById('expiryTime');
-            if (expirySelect) {
-                expirySelect.addEventListener('change', function() {
-                    const customContainer = document.getElementById('customExpiryContainer');
-                    if (this.value === 'custom') {
-                        customContainer.classList.remove('hidden');
-                    } else {
-                        customContainer.classList.add('hidden');
-                    }
-                });
-            }
-        }
-
-        // ==================== INITIALIZATION ====================
-        window.addEventListener('DOMContentLoaded', async () => {
-            // Auto-login if token exists
-            const authToken = localStorage.getItem('authToken');
-
-            if (authToken) {
+        // Auto-login
+        (async () => {
+            const token = localStorage.getItem('authToken');
+            if (token) {
                 try {
-                    // First, get user data from /api/auth/me
-                    const userResponse = await fetch('/api/auth/me', {
-                        headers: {
-                            'Authorization': `Bearer ${authToken}`
-                        }
-                    });
-
-                    if (userResponse.ok) {
-                        const userData = await userResponse.json();
-                        if (userData.success) {
-                            APP_STATE.currentUser = userData.user;
-
-                            // Then fetch user's links
-                            const linksResponse = await fetch('/api/links', {
-                                headers: {
-                                    'Authorization': `Bearer ${authToken}`
-                                }
-                            });
-
-                            if (linksResponse.ok) {
-                                const linksData = await linksResponse.json();
-                                if (linksData.success) {
-                                    APP_STATE.links = linksData.links;
-                                    APP_STATE.currentView = 'dashboard';
-                                }
-                            }
-                        }
-                    } else {
-                        // Token is invalid, clear it
-                        localStorage.removeItem('authToken');
+                    const res = await fetch('/api/auth/me', { headers: { 'Authorization': `Bearer ${token}` } });
+                    const data = await res.json();
+                    if (res.ok) {
+                        APP_STATE.currentUser = data.user;
+                        await fetchUserLinks();
+                        switchToDashboard();
                     }
-                } catch (error) {
-                    console.error('Auto-login failed:', error);
-                    // Clear invalid token
-                    localStorage.removeItem('authToken');
-                }
+                } catch (e) { }
             }
-
             render();
-        });
+        })();
     </script>
 </body>
+
 </html>
