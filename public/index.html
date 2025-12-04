@@ -34,71 +34,76 @@
             0% { background-position: -1000px 0; }
             100% { background-position: 1000px 0; }
         }
+        @keyframes mobileMenuSlide {
+            from { transform: translateX(100%); }
+            to { transform: translateX(0); }
+        }
         .fade-in { animation: fadeIn 0.6s ease-out; }
         .slide-in { animation: slideIn 0.4s ease-out; }
         .pulse-animation { animation: pulse 2s infinite; }
         .float-animation { animation: float 3s ease-in-out infinite; }
-        
-        .gradient-bg { 
+        .mobile-menu-slide { animation: mobileMenuSlide 0.3s ease-out; }
+
+        .gradient-bg {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
             background-size: 200% 200%;
             animation: gradient 15s ease infinite;
         }
-        
-        .glass-effect { 
+
+        .glass-effect {
             background: rgba(255, 255, 255, 0.15);
             backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.3);
             box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
         }
-        
+
         .glass-card {
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.8);
             box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
         }
-        
+
         .custom-scrollbar::-webkit-scrollbar { width: 10px; }
-        .custom-scrollbar::-webkit-scrollbar-track { 
-            background: #f1f1f1; 
-            border-radius: 10px; 
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
         }
-        .custom-scrollbar::-webkit-scrollbar-thumb { 
+        .custom-scrollbar::-webkit-scrollbar-thumb {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 10px; 
+            border-radius: 10px;
         }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #764ba2; }
-        
+
         .captcha-box {
             border: 2px dashed #667eea;
             padding: 20px;
             border-radius: 12px;
             background: linear-gradient(135deg, #f9fafb 0%, #e0e7ff 100%);
         }
-        
+
         .link-card {
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             border-left: 4px solid transparent;
         }
-        
+
         .link-card:hover {
             transform: translateY(-8px) scale(1.02);
             box-shadow: 0 20px 40px -5px rgba(102, 126, 234, 0.3);
             border-left-color: #667eea;
         }
-        
+
         .shimmer {
             background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
             background-size: 1000px 100%;
             animation: shimmer 2s infinite;
         }
-        
+
         .stat-card {
             position: relative;
             overflow: hidden;
         }
-        
+
         .stat-card::before {
             content: '';
             position: absolute;
@@ -109,27 +114,112 @@
             background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
             transform: rotate(45deg);
         }
-        
+
         input:focus, select:focus, textarea:focus {
             outline: none;
             border-color: #667eea;
             box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
         }
-        
+
         .btn-gradient {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             transition: all 0.3s ease;
         }
-        
+
         .btn-gradient:hover {
             transform: translateY(-2px);
             box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
         }
-        
+
         .neon-text {
             text-shadow: 0 0 10px rgba(102, 126, 234, 0.8),
                          0 0 20px rgba(102, 126, 234, 0.6),
                          0 0 30px rgba(102, 126, 234, 0.4);
+        }
+
+        /* Mobile Responsiveness */
+        @media (max-width: 768px) {
+            .container { padding: 0 1rem; }
+            .mobile-menu { display: block; }
+            .desktop-menu { display: none; }
+            .mobile-hidden { display: none; }
+            .mobile-full { width: 100%; }
+            .mobile-stack { flex-direction: column; }
+            .mobile-text-center { text-align: center; }
+            .mobile-p-4 { padding: 1rem; }
+            .mobile-mb-4 { margin-bottom: 1rem; }
+            .mobile-space-y-4 > * + * { margin-top: 1rem; }
+            .mobile-grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+            .mobile-text-sm { font-size: 0.875rem; }
+            .mobile-text-base { font-size: 1rem; }
+            .mobile-h-12 { height: 3rem; }
+            .mobile-min-h-44 { min-height: 11rem; }
+        }
+
+        @media (min-width: 769px) {
+            .mobile-menu { display: none; }
+            .desktop-menu { display: flex; }
+        }
+
+        /* Touch-friendly buttons */
+        @media (max-width: 768px) {
+            button, .btn-touch {
+                min-height: 44px;
+                min-width: 44px;
+                padding: 12px 16px;
+                font-size: 16px; /* Prevent zoom on iOS */
+            }
+
+            input, select, textarea {
+                font-size: 16px; /* Prevent zoom on iOS */
+            }
+        }
+
+        /* Mobile menu overlay */
+        .mobile-menu-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .mobile-menu-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .mobile-menu-content {
+            position: fixed;
+            top: 0;
+            right: -300px;
+            width: 280px;
+            height: 100%;
+            background: white;
+            box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
+            transition: right 0.3s ease;
+            z-index: 1000;
+            padding: 2rem 1rem;
+        }
+
+        .mobile-menu-content.active {
+            right: 0;
+        }
+
+        /* Responsive grid adjustments */
+        @media (max-width: 640px) {
+            .grid-cols-1.md\\:grid-cols-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+            .grid-cols-1.md\\:grid-cols-3 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+            .grid-cols-1.md\\:grid-cols-2 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+        }
+
+        @media (max-width: 480px) {
+            .grid-cols-1.md\\:grid-cols-4 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
         }
     </style>
 </head>
@@ -142,7 +232,27 @@
                     <i class="fas fa-link text-2xl"></i>
                     <span class="text-2xl font-bold" id="brandName">SecureLink</span>
                 </div>
-                <div id="navButtons" class="flex space-x-4"></div>
+
+                <!-- Desktop Navigation -->
+                <div id="navButtons" class="desktop-menu flex space-x-4"></div>
+
+                <!-- Mobile Menu Button -->
+                <button id="mobileMenuBtn" class="mobile-menu md:hidden text-white p-2 rounded-lg hover:bg-white hover:bg-opacity-20 transition">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Menu Overlay -->
+        <div id="mobileMenuOverlay" class="mobile-menu-overlay">
+            <div class="mobile-menu-content">
+                <div class="flex justify-between items-center mb-6">
+                    <span class="text-xl font-bold">Menu</span>
+                    <button id="closeMobileMenu" class="text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+                <div id="mobileNavButtons" class="space-y-4"></div>
             </div>
         </div>
     </nav>
@@ -1416,11 +1526,15 @@
         // ==================== NAVIGATION ====================
         function updateNavigation() {
             const navButtons = document.getElementById('navButtons');
-            
+            const mobileNavButtons = document.getElementById('mobileNavButtons');
+
             if (APP_STATE.currentUser) {
                 navButtons.innerHTML = `
                     <button onclick="switchToDashboard()" class="text-white hover:text-purple-200 transition">
                         <i class="fas fa-th-large mr-1"></i> Dashboard
+                    </button>
+                    <button onclick="switchToLinks()" class="text-white hover:text-purple-200 transition">
+                        <i class="fas fa-list mr-1"></i> Link List
                     </button>
                     <button onclick="switchToAnalytics()" class="text-white hover:text-purple-200 transition">
                         <i class="fas fa-chart-bar mr-1"></i> Analytics
@@ -1432,9 +1546,69 @@
                         <i class="fas fa-sign-out-alt mr-1"></i> Logout
                     </button>
                 `;
+
+                mobileNavButtons.innerHTML = `
+                    <button onclick="switchToDashboard(); closeMobileMenu()" class="w-full text-left text-gray-700 hover:bg-purple-50 px-4 py-3 rounded-lg transition">
+                        <i class="fas fa-th-large mr-2"></i> Dashboard
+                    </button>
+                    <button onclick="switchToLinks(); closeMobileMenu()" class="w-full text-left text-gray-700 hover:bg-purple-50 px-4 py-3 rounded-lg transition">
+                        <i class="fas fa-list mr-2"></i> Link List
+                    </button>
+                    <button onclick="switchToAnalytics(); closeMobileMenu()" class="w-full text-left text-gray-700 hover:bg-purple-50 px-4 py-3 rounded-lg transition">
+                        <i class="fas fa-chart-bar mr-2"></i> Analytics
+                    </button>
+                    <button onclick="switchToSettings(); closeMobileMenu()" class="w-full text-left text-gray-700 hover:bg-purple-50 px-4 py-3 rounded-lg transition">
+                        <i class="fas fa-cog mr-2"></i> Settings
+                    </button>
+                    <button onclick="handleLogout(); closeMobileMenu()" class="w-full text-left text-red-600 hover:bg-red-50 px-4 py-3 rounded-lg transition">
+                        <i class="fas fa-sign-out-alt mr-2"></i> Logout
+                    </button>
+                `;
             } else {
                 navButtons.innerHTML = '';
+                mobileNavButtons.innerHTML = '';
             }
+
+            // Add mobile menu event listeners
+            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+            const mobileMenuOverlay = document.getElementById('mobileMenuOverlay');
+            const closeMobileMenuBtn = document.getElementById('closeMobileMenu');
+
+            if (mobileMenuBtn) {
+                mobileMenuBtn.addEventListener('click', toggleMobileMenu);
+            }
+
+            if (closeMobileMenuBtn) {
+                closeMobileMenuBtn.addEventListener('click', closeMobileMenu);
+            }
+
+            if (mobileMenuOverlay) {
+                mobileMenuOverlay.addEventListener('click', function(e) {
+                    if (e.target === mobileMenuOverlay) {
+                        closeMobileMenu();
+                    }
+                });
+            }
+        }
+
+        function toggleMobileMenu() {
+            const mobileMenuOverlay = document.getElementById('mobileMenuOverlay');
+            const mobileMenuContent = document.querySelector('.mobile-menu-content');
+
+            if (mobileMenuOverlay.classList.contains('active')) {
+                closeMobileMenu();
+            } else {
+                mobileMenuOverlay.classList.add('active');
+                mobileMenuContent.classList.add('active');
+            }
+        }
+
+        function closeMobileMenu() {
+            const mobileMenuOverlay = document.getElementById('mobileMenuOverlay');
+            const mobileMenuContent = document.querySelector('.mobile-menu-content');
+
+            mobileMenuOverlay.classList.remove('active');
+            mobileMenuContent.classList.remove('active');
         }
 
         function switchToLogin() {
@@ -1451,6 +1625,11 @@
             APP_STATE.currentView = 'dashboard';
             // Always fetch fresh links from API when switching to dashboard
             await fetchUserLinks();
+            render();
+        }
+
+        function switchToLinks() {
+            APP_STATE.currentView = 'links';
             render();
         }
 
