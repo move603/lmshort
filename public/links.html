@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,16 +10,35 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes gradient {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
-        .fade-in { animation: fadeIn 0.6s ease-out; }
+        @keyframes gradient {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.6s ease-out;
+        }
+
         .gradient-bg {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
             background-size: 200% 200%;
@@ -36,17 +56,22 @@
             border-left-color: #667eea;
         }
 
-        .custom-scrollbar::-webkit-scrollbar { width: 10px; }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 10px;
+        }
+
         .custom-scrollbar::-webkit-scrollbar-track {
             background: #f1f1f1;
             border-radius: 10px;
         }
+
         .custom-scrollbar::-webkit-scrollbar-thumb {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             border-radius: 10px;
         }
     </style>
 </head>
+
 <body class="bg-gray-50 min-h-screen">
     <!-- Navigation -->
     <nav class="gradient-bg text-white shadow-lg sticky top-0 z-50">
@@ -56,7 +81,30 @@
                     <i class="fas fa-link text-3xl"></i>
                     <span class="text-3xl font-bold">SecureLink</span>
                 </div>
-                <div id="navButtons" class="flex space-x-4"></div>
+
+                <!-- Desktop Menu -->
+                <div id="navButtons" class="hidden md:flex space-x-4"></div>
+
+                <!-- Mobile Menu Button -->
+                <button id="mobileMenuBtn"
+                    class="md:hidden text-white p-2 rounded-lg hover:bg-white hover:bg-opacity-20 transition">
+                    <i class="fas fa-bars text-2xl"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Menu Overlay -->
+        <div id="mobileMenuOverlay"
+            class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden opacity-0 transition-opacity duration-300">
+            <div id="mobileMenuContent"
+                class="fixed top-0 right-0 w-64 h-full bg-white shadow-2xl transform translate-x-full transition-transform duration-300 z-50 p-6">
+                <div class="flex justify-between items-center mb-8">
+                    <h3 class="text-xl font-bold text-gray-800">Menu</h3>
+                    <button id="closeMobileMenu" class="text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-times text-2xl"></i>
+                    </button>
+                </div>
+                <div id="mobileNavButtons" class="flex flex-col space-y-4"></div>
             </div>
         </div>
     </nav>
@@ -504,11 +552,11 @@
                 <!-- Links -->
                 <div class="space-y-4 custom-scrollbar max-h-[800px] overflow-y-auto">
                     ${links.map(link => {
-                        const isExpired = checkExpiry(link);
-                        const shortUrl = `${window.location.origin}/${link.shortCode}`;
-                        const isSelected = selectedLinkIds.has(link.id);
+                const isExpired = checkExpiry(link);
+                const shortUrl = `${window.location.origin}/${link.shortCode}`;
+                const isSelected = selectedLinkIds.has(link.id);
 
-                        return `
+                return `
                             <div class="border-2 ${isSelected ? 'border-purple-500 bg-purple-50 shadow-lg' : 'border-gray-200 bg-white'} rounded-xl p-5 link-card ${isExpired ? 'opacity-60' : ''} transition-all duration-300">
                                 <div class="flex items-start space-x-4">
                                     <!-- Checkbox -->
@@ -557,35 +605,89 @@
                                 </div>
                             </div>
                         `;
-                    }).join('')}
+            }).join('')}
                 </div>
             `;
         }
 
         function updateNav() {
             const nav = document.getElementById('navButtons');
+            const mobileNav = document.getElementById('mobileNavButtons');
+
             if (currentUser) {
-                nav.innerHTML = `
-                    <a href="/" class="text-white hover:text-purple-200 transition">
-                        <i class="fas fa-home mr-1"></i> Home
+                const linksHtml = `
+                    <a href="/" class="text-white hover:text-purple-200 transition flex items-center">
+                        <i class="fas fa-home mr-2"></i> Home
                     </a>
-                    <span class="text-white font-semibold">
-                        <i class="fas fa-list mr-1"></i> Links
+                    <span class="text-white font-bold border-b-2 border-white pb-1 flex items-center">
+                        <i class="fas fa-list mr-2"></i> Links
                     </span>
-                    <a href="/dashboard" class="text-white hover:text-purple-200 transition">
-                        <i class="fas fa-tachometer-alt mr-1"></i> Dashboard
+                    <a href="/dashboard" class="text-white hover:text-purple-200 transition flex items-center">
+                        <i class="fas fa-tachometer-alt mr-2"></i> Dashboard
                     </a>
-                    <button onclick="handleLogout()" class="bg-white text-purple-600 px-4 py-2 rounded-lg font-semibold hover:bg-purple-100 transition">
-                        <i class="fas fa-sign-out-alt mr-1"></i> Logout
+                    <button onclick="handleLogout()" class="bg-white text-purple-600 px-4 py-2 rounded-lg font-semibold hover:bg-purple-100 transition flex items-center">
+                        <i class="fas fa-sign-out-alt mr-2"></i> Logout
                     </button>
                 `;
+
+                const mobileLinksHtml = `
+                    <a href="/" class="text-gray-700 hover:bg-purple-50 px-4 py-3 rounded-lg transition flex items-center">
+                        <i class="fas fa-home mr-3 text-purple-600"></i> Home
+                    </a>
+                    <span class="bg-purple-100 text-purple-800 px-4 py-3 rounded-lg font-bold flex items-center">
+                        <i class="fas fa-list mr-3"></i> Links
+                    </span>
+                    <a href="/dashboard" class="text-gray-700 hover:bg-purple-50 px-4 py-3 rounded-lg transition flex items-center">
+                        <i class="fas fa-tachometer-alt mr-3 text-purple-600"></i> Dashboard
+                    </a>
+                    <button onclick="handleLogout()" class="text-red-600 hover:bg-red-50 px-4 py-3 rounded-lg transition flex items-center w-full text-left">
+                        <i class="fas fa-sign-out-alt mr-3"></i> Logout
+                    </button>
+                `;
+
+                nav.innerHTML = linksHtml;
+                if (mobileNav) mobileNav.innerHTML = mobileLinksHtml;
             } else {
-                nav.innerHTML = `
+                const linksHtml = `
                     <a href="/" class="text-white hover:text-purple-200 transition">
                         <i class="fas fa-home mr-1"></i> Home
                     </a>
                 `;
+                nav.innerHTML = linksHtml;
+                if (mobileNav) mobileNav.innerHTML = linksHtml.replace('text-white', 'text-gray-800');
             }
+
+            // Initialize mobile menu handlers
+            initMobileMenu();
+        }
+
+        function initMobileMenu() {
+            const btn = document.getElementById('mobileMenuBtn');
+            const closeBtn = document.getElementById('closeMobileMenu');
+            const overlay = document.getElementById('mobileMenuOverlay');
+            const content = document.getElementById('mobileMenuContent');
+
+            function openMenu() {
+                overlay.classList.remove('hidden');
+                // Trigger reflow
+                void overlay.offsetWidth;
+                overlay.classList.remove('opacity-0');
+                content.classList.remove('translate-x-full');
+            }
+
+            function closeMenu() {
+                overlay.classList.add('opacity-0');
+                content.classList.add('translate-x-full');
+                setTimeout(() => {
+                    overlay.classList.add('hidden');
+                }, 300);
+            }
+
+            if (btn) btn.onclick = openMenu;
+            if (closeBtn) closeBtn.onclick = closeMenu;
+            if (overlay) overlay.onclick = (e) => {
+                if (e.target === overlay) closeMenu();
+            };
         }
 
         function handleLogout() {
@@ -632,4 +734,5 @@
         });
     </script>
 </body>
+
 </html>
