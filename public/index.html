@@ -603,21 +603,24 @@
                     </div>
 
                     <!-- Links List -->
-                    <div class="bg-white rounded-xl shadow-lg p-8">
-                        <div class="flex justify-between items-center mb-6">
-                            <h3 class="text-2xl font-bold text-gray-800">
+                    <div class="bg-white rounded-xl shadow-lg p-4 md:p-8">
+                        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 space-y-4 md:space-y-0">
+                            <h3 class="text-xl md:text-2xl font-bold text-gray-800">
                                 <i class="fas fa-list"></i> Your Links
                             </h3>
-                            <div class="flex space-x-3">
-                                <button id="deleteSelectedBtn" onclick="deleteSelectedLinks()" class="hidden bg-red-500 text-white px-6 py-2 rounded-lg hover:bg-red-600 transition font-semibold">
+                            <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3 w-full md:w-auto">
+                                <button id="deleteSelectedBtn" onclick="deleteSelectedLinks()" class="hidden bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition font-semibold text-sm md:text-base">
                                     <i class="fas fa-trash-alt mr-2"></i> Delete Selected (<span id="selectedCount">0</span>)
                                 </button>
-                                <button onclick="switchToAnalytics()" class="gradient-bg text-white px-4 py-2 rounded-lg hover:opacity-90 transition">
-                                    <i class="fas fa-chart-bar mr-2"></i> View Analytics
+                                <button onclick="exportLinks()" class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition font-semibold text-sm md:text-base">
+                                    <i class="fas fa-download mr-2"></i> Export
                                 </button>
+                                <a href="/links" class="gradient-bg text-white px-4 py-2 rounded-lg hover:opacity-90 transition font-semibold text-center text-sm md:text-base">
+                                    <i class="fas fa-list mr-2"></i> View All
+                                </a>
                             </div>
                         </div>
-                        
+
                         <div class="space-y-4 custom-scrollbar max-h-96 overflow-y-auto" id="linksList">
                             ${renderLinksList(userLinks)}
                         </div>
@@ -888,6 +891,31 @@
             navigator.clipboard.writeText(text).then(() => {
                 showToast('Copied to clipboard!', 'success');
             });
+        }
+
+        function exportLinks() {
+            const userLinks = APP_STATE.links.filter(l => l.userId === APP_STATE.currentUser.id);
+            const csvContent = [
+                ['Title', 'Short URL', 'Original URL', 'Clicks', 'Created', 'Expires', 'Status'],
+                ...userLinks.map(link => [
+                    link.title || '',
+                    `${window.location.origin}/${link.shortCode}`,
+                    link.originalUrl,
+                    link.clicks || 0,
+                    new Date(link.createdAt).toLocaleDateString(),
+                    link.expiryTime ? new Date(link.expiryTime).toLocaleDateString() : 'Never',
+                    checkLinkExpiry(link) ? 'Expired' : 'Active'
+                ])
+            ].map(row => row.map(cell => `"${cell}"`).join(',')).join('\n');
+
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'links-export.csv';
+            a.click();
+            window.URL.revokeObjectURL(url);
+            showToast('Links exported successfully!', 'success');
         }
 
         function showQRCode(shortCode) {

@@ -76,6 +76,30 @@ module.exports = async function handler(req, res) {
       data: { clicks: { increment: 1 } }
     });
 
+    // Create analytics record
+    try {
+      const userAgent = req.headers['user-agent'] || '';
+      const referrer = req.headers['referer'] || req.headers['referrer'] || '';
+
+      // Determine device type
+      let device = 'Desktop';
+      if (/mobile|android|iphone|ipad|ipod/i.test(userAgent)) {
+        device = /tablet|ipad/i.test(userAgent) ? 'Tablet' : 'Mobile';
+      }
+
+      await prisma.analytics.create({
+        data: {
+          linkId: link.id,
+          device,
+          referrer,
+          userAgent
+        }
+      });
+    } catch (analyticsError) {
+      // Don't fail the redirect if analytics fails
+      console.error('Analytics error:', analyticsError);
+    }
+
     // Redirect to original URL
     return res.redirect(302, link.originalUrl);
   } catch (error) {
