@@ -1531,7 +1531,8 @@
                         customAlias,
                         title: linkTitle,
                         password: linkPassword,
-                        expiryTime: expiryDateTime,
+                        expiryMinutes: expiryTime ? parseInt(expiryTime) : null,
+                        customExpiryDate: expiryTime === 'custom' ? document.getElementById('customExpiryDate').value : null,
                         domainId
                     })
                 });

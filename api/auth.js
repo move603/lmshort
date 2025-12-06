@@ -58,10 +58,10 @@ async function handleLogin(req, res) {
         return res.status(400).json({ error: 'Email and password are required' });
     }
 
-    // CAPTCHA validation
-    if (parseInt(captchaAnswer) !== parseInt(captchaCorrect)) {
-        return res.status(400).json({ error: 'CAPTCHA verification failed' });
-    }
+    // CAPTCHA validation (disabled for now)
+    // if (parseInt(captchaAnswer) !== parseInt(captchaCorrect)) {
+    //     return res.status(400).json({ error: 'CAPTCHA verification failed' });
+    // }
 
     // Find user
     const user = await prisma.user.findUnique({
@@ -113,10 +113,10 @@ async function handleRegister(req, res) {
         return res.status(400).json({ error: 'All fields are required' });
     }
 
-    // CAPTCHA validation
-    if (parseInt(captchaAnswer) !== parseInt(captchaCorrect)) {
-        return res.status(400).json({ error: 'CAPTCHA verification failed' });
-    }
+    // CAPTCHA validation (disabled for now)
+    // if (parseInt(captchaAnswer) !== parseInt(captchaCorrect)) {
+    //     return res.status(400).json({ error: 'CAPTCHA verification failed' });
+    // }
 
     // Check if user already exists
     const existingUser = await prisma.user.findUnique({

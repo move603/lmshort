@@ -77,7 +77,7 @@
       const password = document.getElementById('loginPassword').value.trim();
       if (!email || !password) { showToast('Please fill in all fields', 'error'); return; }
       try {
-        const response = await fetch(`${API_BASE}/api/auth/login`, {
+        const response = await fetch(`${API_BASE}/api/auth?type=login`, {
           method: 'POST', headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
           body: JSON.stringify({ email, password, captchaAnswer: 0, captchaCorrect: 0 })
         });
