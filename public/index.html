@@ -2499,26 +2499,6 @@
                 `;
             }
 
-            // Add mobile menu event listeners
-            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
-            const mobileMenuOverlay = document.getElementById('mobileMenuOverlay');
-            const closeMobileMenuBtn = document.getElementById('closeMobileMenu');
-
-            if (mobileMenuBtn) {
-                mobileMenuBtn.addEventListener('click', toggleMobileMenu);
-            }
-
-            if (closeMobileMenuBtn) {
-                closeMobileMenuBtn.addEventListener('click', closeMobileMenu);
-            }
-
-            if (mobileMenuOverlay) {
-                mobileMenuOverlay.addEventListener('click', function (e) {
-                    if (e.target === mobileMenuOverlay) {
-                        closeMobileMenu();
-                    }
-                });
-            }
         }
 
         function toggleMobileMenu() {
@@ -2680,6 +2660,27 @@
                     // Clear invalid token
                     localStorage.removeItem('authToken');
                 }
+            }
+
+            // Add mobile menu event listeners (Run once)
+            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+            const mobileMenuOverlay = document.getElementById('mobileMenuOverlay');
+            const closeMobileMenuBtn = document.getElementById('closeMobileMenu');
+
+            if (mobileMenuBtn) {
+                mobileMenuBtn.addEventListener('click', toggleMobileMenu);
+            }
+
+            if (closeMobileMenuBtn) {
+                closeMobileMenuBtn.addEventListener('click', closeMobileMenu);
+            }
+
+            if (mobileMenuOverlay) {
+                mobileMenuOverlay.addEventListener('click', function (e) {
+                    if (e.target === mobileMenuOverlay) {
+                        closeMobileMenu();
+                    }
+                });
             }
 
             render();
