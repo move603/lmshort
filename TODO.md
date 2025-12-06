@@ -44,11 +44,11 @@ Here’s an optimized, implementation‑ready TODO list for this project.
    - [ ] Use `links.html` mobile navigation as design reference.
 
 6. **Implement Mobile Navigation Pattern Across All Pages**
-   - [ ] `index.html`: add mobile nav (hamburger / single button that expands to show all nav options).
-   - [ ] `dashboard.html`: integrate same mobile nav.
-   - [ ] `links.html`: keep existing mobile nav, refine styling if needed.
-   - [ ] `analytics.html`: integrate same mobile nav.
-   - [ ] Ensure desktop version shows full nav/options as boxes or sidebar.
+   - [x] `index.html`: add mobile nav (hamburger / single button that expands to show all nav options).
+   - [x] `dashboard.html`: integrate same mobile nav (redirects to index.html).
+   - [x] `links.html`: keep existing mobile nav, refine styling if needed.
+   - [x] `analytics.html`: integrate same mobile nav (redirects to index.html).
+   - [x] Ensure desktop version shows full nav/options as boxes or sidebar.
 
 7. **Responsive CSS (Mobile-First)**
    - [ ] Define base mobile styles: single-column layout, larger tap targets, readable fonts.
