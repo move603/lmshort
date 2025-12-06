@@ -275,7 +275,10 @@
             }
 
             /* Enhanced mobile touch targets */
-            button, .btn-touch, input[type="submit"], input[type="button"] {
+            button,
+            .btn-touch,
+            input[type="submit"],
+            input[type="button"] {
                 min-height: 48px;
                 min-width: 48px;
                 padding: 12px 16px;
@@ -289,8 +292,12 @@
             }
 
             /* Mobile-optimized form inputs */
-            input, select, textarea, button {
-                font-size: 16px; /* Prevent zoom on iOS */
+            input,
+            select,
+            textarea,
+            button {
+                font-size: 16px;
+                /* Prevent zoom on iOS */
                 border-radius: 8px;
             }
 
@@ -475,15 +482,17 @@
         // ==================== GLOBAL STATE ====================
         const APP_STATE = {
             currentUser: null,
-            currentView: 'login',
+            currentView: 'home', // Default to Home for Guest Mode
             links: [],
+            guestLinks: JSON.parse(localStorage.getItem('guestLinks')) || [],
             settings: JSON.parse(localStorage.getItem('settings')) || {
                 brandName: 'SecureLink',
                 brandColor: '#667eea',
                 logo: null
             },
             captchaVerified: false,
-            isLoading: false
+            isLoading: false,
+            domains: [] // Store user domains
         };
 
         // ==================== API FUNCTIONS ====================
@@ -732,6 +741,27 @@
                 if (response.ok && data.success) {
                     APP_STATE.currentUser = data.user;
                     localStorage.setItem('authToken', data.user.token);
+
+                    // Sync Guest Links
+                    const guestLinks = JSON.parse(localStorage.getItem('guestLinks')) || [];
+                    if (guestLinks.length > 0) {
+                        try {
+                            const guestShortCodes = guestLinks.map(l => l.shortCode);
+                            await fetch('/api/links/sync', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'Authorization': `Bearer ${data.user.token}`
+                                },
+                                body: JSON.stringify({ shortCodes: guestShortCodes })
+                            });
+                            localStorage.removeItem('guestLinks'); // Clear after sync
+                            APP_STATE.guestLinks = [];
+                        } catch (syncError) {
+                            console.error('Sync error:', syncError);
+                        }
+                    }
+
                     showToast('Login successful!', 'success');
                     await fetchUserLinks();
                     switchToDashboard();
@@ -793,8 +823,156 @@
 
         function handleLogout() {
             APP_STATE.currentUser = null;
+            APP_STATE.links = [];
+            localStorage.removeItem('authToken'); // Ensure token is removed
             showToast('Logged out successfully', 'info');
             switchToLogin();
+        }
+
+        // ==================== HOME (GUEST MODE) ====================
+        function renderHome() {
+            const guestLinks = APP_STATE.guestLinks || [];
+
+            return `
+                <div class="fade-in max-w-4xl mx-auto">
+                    <!-- Hero Section -->
+                    <div class="text-center mb-12 animate-float">
+                        <i class="fas fa-link text-6xl gradient-bg bg-clip-text text-transparent mb-4 inline-block"></i>
+                        <h1 class="text-4xl md:text-6xl font-black text-gray-800 mb-4 tracking-tight">
+                            Shorten Your Links <br>
+                            <span class="gradient-bg bg-clip-text text-transparent">Expand Your Reach</span>
+                        </h1>
+                        <p class="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
+                            Transform long, ugly URLs into short, memorable links. Track clicks, analyze data, and manage your brand.
+                        </p>
+                        <div class="flex justify-center space-x-4">
+                             <button onclick="switchToSignup()" class="bg-gray-800 text-white px-8 py-3 rounded-full font-bold hover:bg-gray-900 transition shadow-lg transform hover:-translate-y-1">
+                                Get Started Free
+                            </button>
+                            <button onclick="document.getElementById('shortener-card').scrollIntoView({behavior: 'smooth'})" class="text-purple-600 font-bold px-8 py-3 rounded-full hover:bg-purple-50 transition">
+                                Learn More
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Shortener Card -->
+                    <div id="shortener-card" class="bg-white rounded-3xl shadow-2xl p-6 md:p-10 mb-12 glass-card border border-purple-100 relative overflow-hidden">
+                        <div class="absolute top-0 right-0 w-64 h-64 bg-purple-100 rounded-full mix-blend-multiply filter blur-3xl opacity-30 -mr-32 -mt-32"></div>
+                        <div class="absolute bottom-0 left-0 w-64 h-64 bg-blue-100 rounded-full mix-blend-multiply filter blur-3xl opacity-30 -ml-32 -mb-32"></div>
+
+                        <div class="relative z-10">
+                            <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">
+                                <i class="fas fa-magic gradient-bg bg-clip-text text-transparent"></i> Paste your long link here
+                            </h2>
+                            
+                            <div class="flex flex-col md:flex-row gap-4 mb-6">
+                                <div class="flex-1">
+                                    <div class="relative">
+                                        <i class="fas fa-link absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                                        <input type="url" id="originalUrl" class="w-full pl-12 pr-4 py-4 border-2 border-gray-100 rounded-xl focus:ring-4 focus:ring-purple-100 focus:border-purple-500 transition text-lg" placeholder="https://example.com/very-long-url-to-shorten">
+                                    </div>
+                                </div>
+                                <button onclick="createLink()" class="gradient-bg text-white px-8 py-4 rounded-xl font-bold hover:shadow-xl transition transform hover:-translate-y-1 flex items-center justify-center min-w-[160px]">
+                                    <i class="fas fa-compress-alt mr-2"></i> Shorten
+                                </button>
+                            </div>
+
+                            <!-- Advanced Options Toggler -->
+                            <div class="text-center">
+                                <button onclick="document.getElementById('guestOptions').classList.toggle('hidden')" class="text-sm text-gray-500 hover:text-purple-600 transition flex items-center justify-center mx-auto">
+                                    <i class="fas fa-sliders-h mr-2"></i> Customize Link (Optional)
+                                </button>
+                            </div>
+
+                            <div id="guestOptions" class="hidden mt-6 grid grid-cols-1 md:grid-cols-2 gap-4 animate-fade-in-down">
+                                <div>
+                                    <label class="block text-gray-700 font-semibold mb-2">Custom Alias</label>
+                                    <input type="text" id="customAlias" class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500" placeholder="my-link">
+                                </div>
+                                <div>
+                                    <label class="block text-gray-700 font-semibold mb-2">Expiry</label>
+                                    <select id="expiryTime" class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500">
+                                        <option value="">No Expiry</option>
+                                        <option value="60">1 Hour</option>
+                                        <option value="1440">24 Hours</option>
+                                        <option value="10080">7 Days</option>
+                                    </select>
+                                </div>
+                                <input type="hidden" id="linkPassword" value="">
+                                <input type="hidden" id="linkTitle" value="">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Guest Recent Links -->
+                    ${guestLinks.length > 0 ? `
+                        <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8">
+                            <h3 class="text-xl font-bold text-gray-800 mb-6 flex items-center">
+                                <i class="fas fa-history mr-2 text-purple-600"></i> Your Recent Links
+                            </h3>
+                            <div class="space-y-4">
+                                ${guestLinks.slice(0, 5).map(link => `
+                                    <div class="border border-gray-100 rounded-xl p-4 hover:shadow-md transition bg-gray-50">
+                                        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                                            <div class="flex-1 min-w-0">
+                                                <div class="flex items-center space-x-2 mb-1">
+                                                    <a href="/${link.shortCode}" target="_blank" class="text-lg font-bold text-purple-600 hover:underline truncate block">
+                                                        ${window.location.origin}/${link.shortCode}
+                                                    </a>
+                                                    <button onclick="copyToClipboard('${window.location.origin}/${link.shortCode}')" class="text-gray-400 hover:text-purple-600">
+                                                        <i class="fas fa-copy"></i>
+                                                    </button>
+                                                </div>
+                                                <p class="text-sm text-gray-500 truncate">${link.originalUrl}</p>
+                                            </div>
+                                            <div class="flex items-center space-x-3 w-full md:w-auto">
+                                                <button onclick="showQRCode('${link.shortCode}')" class="flex-1 md:flex-none bg-blue-100 text-blue-600 px-4 py-2 rounded-lg hover:bg-blue-200 transition font-medium text-sm">
+                                                    <i class="fas fa-qrcode mr-1"></i> QR
+                                                </button>
+                                                <span class="text-xs text-gray-400 bg-gray-100 px-3 py-1 rounded-full whitespace-nowrap">
+                                                    Guest Link
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                            <div class="mt-6 text-center bg-purple-50 rounded-xl p-4">
+                                <p class="text-purple-800 text-sm">
+                                    <i class="fas fa-info-circle mr-1"></i> 
+                                    <a href="#" onclick="switchToLogin()" class="font-bold hover:underline">Log in</a> 
+                                    to save these links permanently and see analytics!
+                                </p>
+                            </div>
+                        </div>
+                    ` : ''}
+
+                    <!-- Features Grid -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12 mb-12">
+                        <div class="text-center p-6 rounded-2xl bg-white shadow-sm hover:shadow-md transition">
+                            <div class="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center mx-auto mb-4 text-blue-600 text-2xl">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <h3 class="font-bold text-lg mb-2">Analytics</h3>
+                            <p class="text-gray-500 text-sm">Track clicks and know your audience.</p>
+                        </div>
+                        <div class="text-center p-6 rounded-2xl bg-white shadow-sm hover:shadow-md transition">
+                            <div class="w-16 h-16 bg-purple-100 rounded-2xl flex items-center justify-center mx-auto mb-4 text-purple-600 text-2xl">
+                                <i class="fas fa-globe"></i>
+                            </div>
+                            <h3 class="font-bold text-lg mb-2">Custom Domains</h3>
+                            <p class="text-gray-500 text-sm">Use your own domain for branding.</p>
+                        </div>
+                        <div class="text-center p-6 rounded-2xl bg-white shadow-sm hover:shadow-md transition">
+                            <div class="w-16 h-16 bg-green-100 rounded-2xl flex items-center justify-center mx-auto mb-4 text-green-600 text-2xl">
+                                <i class="fas fa-shield-alt"></i>
+                            </div>
+                            <h3 class="font-bold text-lg mb-2">Secure & Reliable</h3>
+                            <p class="text-gray-500 text-sm">HTTPS encryption and 99.9% uptime.</p>
+                        </div>
+                    </div>
+                </div>
+            `;
         }
 
         // ==================== DASHBOARD ====================
@@ -875,7 +1053,20 @@
                                 <label class="block text-gray-700 font-semibold mb-2">
                                     <i class="fas fa-tag"></i> Custom Alias (Optional)
                                 </label>
-                                <input type="text" id="customAlias" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="my-custom-link">
+                                <div class="flex">
+                                    <div class="relative">
+                                        <select id="domainSelect" class="appearance-none bg-gray-50 border border-gray-300 text-gray-700 py-3 pl-4 pr-8 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-purple-500 border-r-0 h-full">
+                                            <option value="">${window.location.hostname}/</option>
+                                            ${APP_STATE.domains && APP_STATE.domains.filter(d => d.verified).map(d => `
+                                                <option value="${d.id}">${d.domain}/</option>
+                                            `).join('')}
+                                        </select>
+                                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                                            <i class="fas fa-chevron-down text-xs"></i>
+                                        </div>
+                                    </div>
+                                    <input type="text" id="customAlias" class="flex-1 px-4 py-3 border border-gray-300 rounded-r-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="alias">
+                                </div>
                             </div>
 
                             <div>
@@ -1130,6 +1321,8 @@
             const expiryTime = document.getElementById('expiryTime').value;
             const linkPassword = document.getElementById('linkPassword').value;
             const linkTitle = document.getElementById('linkTitle').value;
+            const domainSelect = document.getElementById('domainSelect');
+            const domainId = domainSelect ? domainSelect.value : null;
 
             if (!originalUrl) {
                 showToast('Please enter a URL', 'error');
@@ -1159,37 +1352,70 @@
             }
 
             try {
+                const authToken = localStorage.getItem('authToken');
+                const headers = { 'Content-Type': 'application/json' };
+                if (authToken) headers['Authorization'] = `Bearer ${authToken}`;
+
                 const response = await fetch('/api/links/create', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${localStorage.getItem('authToken')}`
-                    },
+                    headers,
                     body: JSON.stringify({
                         originalUrl,
                         customAlias,
                         title: linkTitle,
                         password: linkPassword,
-                        expiryTime: expiryDateTime
+                        expiryTime: expiryDateTime,
+                        domainId
                     })
                 });
 
                 const data = await response.json();
 
                 if (response.ok && data.success) {
-                    // Add the new link to APP_STATE immediately for instant UI update
-                    if (!APP_STATE.links) APP_STATE.links = [];
-                    APP_STATE.links.unshift(data.link); // Add to beginning of array
+                    // Update state
+                    if (APP_STATE.currentUser) {
+                        if (!APP_STATE.links) APP_STATE.links = [];
+                        APP_STATE.links.unshift(data.link);
+                    } else {
+                        // Guest mode: Save to local storage
+                        if (!APP_STATE.guestLinks) APP_STATE.guestLinks = [];
+                        APP_STATE.guestLinks.unshift(data.link);
+                        localStorage.setItem('guestLinks', JSON.stringify(APP_STATE.guestLinks));
+                    }
 
                     // Clear form
-                    document.getElementById('originalUrl').value = '';
-                    document.getElementById('customAlias').value = '';
-                    document.getElementById('expiryTime').value = '';
-                    document.getElementById('linkPassword').value = '';
-                    document.getElementById('linkTitle').value = '';
+                    const inputs = ['originalUrl', 'customAlias', 'expiryTime', 'linkPassword', 'linkTitle'];
+                    inputs.forEach(id => {
+                        const el = document.getElementById(id);
+                        if (el) el.value = '';
+                    });
+                    if (document.getElementById('domainSelect')) document.getElementById('domainSelect').selectedIndex = 0;
+
+                    // Determine short URL based on domain
+                    let shortUrl = '';
+                    if (data.link.domain) {
+                        // If backend returns populated domain, good. If not, we might need to construct it?
+                        // The create API returns `link` object. Does it include domain info?
+                        // I only added `domainId` to prisma create. Prisma result includes only local fields by default unless `include` is used.
+                        // But the Dashboard uses `window.location.origin`. Guest uses origin.
+                        // For custom domain, we should use that domain.
+
+                        // Wait, if I created it with a custom domain, the returned link object has `domainId`.
+                        // I need to know the domain name to display it.
+                        // The backend `create.js` returns simple fields.
+                        // I should update `create.js` to include `domain` relation if possible, or I look it up from APP_STATE.domains here.
+
+                        const usedDomain = APP_STATE.domains ? APP_STATE.domains.find(d => d.id === data.link.domainId) : null;
+                        if (usedDomain) {
+                            shortUrl = `https://${usedDomain.domain}/${data.link.shortCode}`;
+                        } else {
+                            shortUrl = `${window.location.origin}/${data.link.shortCode}`;
+                        }
+                    } else {
+                        shortUrl = `${window.location.origin}/${data.link.shortCode}`;
+                    }
 
                     // Show elegant popup modal with link details
-                    const shortUrl = `${window.location.origin}/${data.link.shortCode}`;
                     showCreatedLinkModal(shortUrl, data.link.shortCode);
 
                     // Re-render to show the new link immediately (real-time update)
@@ -1765,6 +1991,77 @@
         }
 
         // ==================== SETTINGS ====================
+        async function fetchUserDomains() {
+            if (!APP_STATE.currentUser) return;
+            try {
+                const response = await fetch('/api/domains/list', {
+                    headers: { 'Authorization': `Bearer ${localStorage.getItem('authToken')}` }
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.success) {
+                        APP_STATE.domains = data.domains;
+                    }
+                }
+            } catch (error) {
+                console.error('Error fetching domains:', error);
+            }
+        }
+
+        async function addDomain() {
+            const domain = document.getElementById('newDomainInput').value;
+            if (!domain) return showToast('Please enter a domain', 'error');
+
+            try {
+                const response = await fetch('/api/domains/add', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+                    },
+                    body: JSON.stringify({ domain })
+                });
+                const data = await response.json();
+                if (response.ok && data.success) {
+                    showToast('Domain added! Please verify it.', 'success');
+                    document.getElementById('newDomainInput').value = '';
+                    await fetchUserDomains();
+                    render();
+                } else {
+                    showToast(data.error || 'Failed to add domain', 'error');
+                }
+            } catch (error) {
+                showToast('Network error', 'error');
+            }
+        }
+
+        async function verifyDomain(domainId) {
+            try {
+                const response = await fetch('/api/domains/verify', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+                    },
+                    body: JSON.stringify({ domainId })
+                });
+                const data = await response.json();
+                if (response.ok && data.success) {
+                    if (data.verified) {
+                        showToast('Domain verified successfully!', 'success');
+                    } else {
+                        showToast('Verification failed. Check DNS records.', 'error');
+                    }
+                    await fetchUserDomains();
+                    render();
+                } else {
+                    showToast(data.error || 'Verification failed', 'error');
+                }
+            } catch (error) {
+                showToast('Network error', 'error');
+            }
+        }
+
         function renderSettings() {
             return `
                 <div class="max-w-4xl mx-auto fade-in">
@@ -1775,6 +2072,51 @@
                         <button onclick="switchToDashboard()" class="gradient-bg text-white px-4 py-2 rounded-lg hover:opacity-90 transition">
                             <i class="fas fa-arrow-left mr-2"></i> Back
                         </button>
+                    </div>
+
+                    <!-- Custom Domains -->
+                    <div class="bg-white rounded-xl shadow-lg p-8 mb-6">
+                        <h3 class="text-xl font-bold text-gray-800 mb-4">
+                            <i class="fas fa-globe"></i> Custom Domains
+                        </h3>
+                        
+                        <div class="flex gap-4 mb-6">
+                            <input type="text" id="newDomainInput" placeholder="example.com" class="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500">
+                            <button onclick="addDomain()" class="bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 transition font-bold">
+                                Add Domain
+                            </button>
+                        </div>
+
+                        <div class="space-y-4">
+                            ${APP_STATE.domains && APP_STATE.domains.length > 0 ? APP_STATE.domains.map(d => `
+                                <div class="border border-gray-200 rounded-xl p-4 flex flex-col md:flex-row justify-between items-center gap-4 bg-gray-50">
+                                    <div>
+                                        <p class="font-bold text-lg text-gray-800">${d.domain}</p>
+                                        <div class="flex items-center space-x-2 mt-1">
+                                            ${d.verified
+                    ? '<span class="text-green-600 text-sm"><i class="fas fa-check-circle"></i> Verified</span>'
+                    : '<span class="text-amber-600 text-sm"><i class="fas fa-exclamation-circle"></i> Unverified</span>'}
+                                            <span class="text-xs text-gray-400">Added ${new Date(d.createdAt).toLocaleDateString()}</span>
+                                        </div>
+                                        ${!d.verified ? `
+                                            <div class="mt-2 bg-amber-50 p-3 rounded border border-amber-100 text-sm text-amber-800">
+                                                <p class="font-semibold mb-1">Verification Required:</p>
+                                                <p>Add TXT record: <code class="bg-white px-2 py-0.5 rounded border border-amber-200 select-all">${d.txtRecord}</code></p>
+                                            </div>
+                                        ` : ''}
+                                    </div>
+                                    ${!d.verified ? `
+                                        <button onclick="verifyDomain('${d.id}')" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition font-semibold w-full md:w-auto">
+                                            Verify DNS
+                                        </button>
+                                    ` : `
+                                        <div class="text-green-500 font-bold bg-green-50 px-4 py-2 rounded-lg border border-green-100">
+                                            <i class="fas fa-check"></i> Active
+                                        </div>
+                                    `}
+                                </div>
+                            `).join('') : '<p class="text-gray-500 text-center py-4">No custom domains added yet.</p>'}
+                        </div>
                     </div>
 
                     <!-- Branding Settings -->
@@ -1847,7 +2189,7 @@
             APP_STATE.settings.brandColor = brandColor;
 
             saveToLocalStorage();
-            document.getElementById('brandName').textContent = brandName;
+            // document.getElementById('brandName').textContent = brandName; // There is no ID 'brandName' in nav? Ah, user might have meant the nav brand.
 
             showToast('Settings saved successfully!', 'success');
         }
@@ -1894,8 +2236,22 @@
                     </button>
                 `;
             } else {
-                navButtons.innerHTML = '';
-                mobileNavButtons.innerHTML = '';
+                navButtons.innerHTML = `
+                    <button onclick="switchToLogin()" class="text-white hover:text-purple-200 transition font-semibold">
+                        Sign In
+                    </button>
+                    <button onclick="switchToSignup()" class="bg-white text-purple-600 px-5 py-2 rounded-full hover:bg-purple-100 transition font-bold shadow-md">
+                        Get Started
+                    </button>
+                `;
+                mobileNavButtons.innerHTML = `
+                     <button onclick="switchToLogin(); closeMobileMenu()" class="w-full text-left text-gray-700 hover:bg-purple-50 px-4 py-3 rounded-lg transition font-semibold">
+                        Sign In
+                    </button>
+                    <button onclick="switchToSignup(); closeMobileMenu()" class="w-full text-left text-purple-600 hover:bg-purple-50 px-4 py-3 rounded-lg transition font-bold">
+                        Create Account
+                    </button>
+                `;
             }
 
             // Add mobile menu event listeners
@@ -1952,13 +2308,15 @@
 
         async function switchToDashboard() {
             APP_STATE.currentView = 'dashboard';
-            // Always fetch fresh links from API when switching to dashboard
-            await fetchUserLinks();
+            // Always fetch fresh links and domains
+            await Promise.all([
+                fetchUserLinks(),
+                fetchUserDomains()
+            ]);
             render();
         }
 
         function switchToLinks() {
-            // Redirect to the dedicated Links page as requested
             window.location.href = '/links.html';
         }
 
@@ -1969,8 +2327,10 @@
 
         function switchToSettings() {
             APP_STATE.currentView = 'settings';
+            fetchUserDomains(); // Fetch in case we go directly to settings? Backup.
             render();
         }
+
 
         // ==================== MAIN RENDER ====================
         function render() {
@@ -1979,8 +2339,11 @@
             if (!APP_STATE.currentUser) {
                 if (APP_STATE.currentView === 'signup') {
                     app.innerHTML = renderSignup();
-                } else {
+                } else if (APP_STATE.currentView === 'login') {
                     app.innerHTML = renderLogin();
+                } else {
+                    // Default to Home for guests
+                    app.innerHTML = renderHome();
                 }
             } else {
                 switch (APP_STATE.currentView) {
@@ -2042,7 +2405,24 @@
                                 const linksData = await linksResponse.json();
                                 if (linksData.success) {
                                     APP_STATE.links = linksData.links;
-                                    APP_STATE.currentView = 'dashboard';
+
+                                    // Handle Deep Linking via Query Params
+                                    const urlParams = new URLSearchParams(window.location.search);
+                                    const viewParam = urlParams.get('view');
+                                    const validViews = ['dashboard', 'analytics', 'settings', 'links'];
+
+                                    if (viewParam && validViews.includes(viewParam)) {
+                                        if (viewParam === 'links') {
+                                            window.location.href = '/links.html';
+                                            return;
+                                        }
+                                        APP_STATE.currentView = viewParam;
+                                        // If specific view needs data (like settings -> domains), fetch it
+                                        if (viewParam === 'settings') fetchUserDomains();
+                                        if (viewParam === 'analytics') setTimeout(initializeCharts, 100);
+                                    } else {
+                                        APP_STATE.currentView = 'dashboard';
+                                    }
                                 }
                             }
                         }

@@ -82,13 +82,14 @@ module.exports = async function handler(req, res) {
 
     // Generate or use custom short code
     let shortCode = customAlias || generateShortCode();
-    
+
     // Ensure short code is alphanumeric
     if (!/^[a-zA-Z0-9]+$/.test(shortCode)) {
       return res.status(400).json({ error: 'Custom alias must be alphanumeric' });
     }
 
-    // Check if short code already exists
+    // Check if short code already exists (globally or within domain context?)
+    // Usually shortCode is unique globally in the table, so:
     const existingLink = await prisma.link.findUnique({
       where: { shortCode }
     });
@@ -108,6 +109,27 @@ module.exports = async function handler(req, res) {
       }
     }
 
+    // Domain handling
+    let domainId = null;
+    if (req.body.domainId && userId) {
+      // Verify user owns the domain
+      const domain = await prisma.domain.findFirst({
+        where: {
+          id: req.body.domainId,
+          userId: userId,
+          verified: true
+        }
+      });
+      if (domain) {
+        domainId = domain.id;
+      } else {
+        // If domain invalid or not found, ignored or error? 
+        // Let's error to be safe
+        // return res.status(400).json({ error: 'Invalid or unverified domain' });
+        // Or just ignore and use default
+      }
+    }
+
     // Create link
     const link = await prisma.link.create({
       data: {
@@ -116,7 +138,8 @@ module.exports = async function handler(req, res) {
         userId,
         title: title || null,
         password: password || null,
-        expiryTime
+        expiryTime,
+        domainId
       }
     });
 
@@ -135,9 +158,9 @@ module.exports = async function handler(req, res) {
     });
   } catch (error) {
     console.error('Create link error:', error);
-    return res.status(500).json({ 
+    return res.status(500).json({
       error: 'Failed to create link. Please try again.',
-      details: error.message 
+      details: error.message
     });
   } finally {
     await prisma.$disconnect();

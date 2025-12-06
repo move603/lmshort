@@ -21,9 +21,26 @@ model User {
   lastLogin DateTime @default(now())
   
   links     Link[]
+  domains   Domain[]
   
   @@index([email])
   @@index([token])
+}
+
+// Domain Model
+model Domain {
+  id        String   @id @default(cuid())
+  domain    String   @unique
+  userId    String
+  verified  Boolean  @default(false)
+  txtRecord String   // DNS TXT record for verification
+  createdAt DateTime @default(now())
+  
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  links     Link[]
+
+  @@index([userId])
+  @@index([domain])
 }
 
 // Link Model
@@ -37,13 +54,16 @@ model Link {
   expiryTime  DateTime?
   clicks      Int       @default(0)
   createdAt   DateTime  @default(now())
+  domainId    String?   // Optional: Link specific to a custom domain
   
   user        User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  domain      Domain?   @relation(fields: [domainId], references: [id])
   analytics   Analytics[]
   
   @@index([shortCode])
   @@index([userId])
   @@index([createdAt])
+  @@index([domainId])
 }
 
 // Analytics Model

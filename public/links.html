@@ -616,34 +616,41 @@
 
             if (currentUser) {
                 const linksHtml = `
-                    <a href="/" class="text-white hover:text-purple-200 transition flex items-center">
-                        <i class="fas fa-home mr-2"></i> Home
+                    <a href="/?view=dashboard" class="text-white hover:text-purple-200 transition flex items-center">
+                        <i class="fas fa-th-large mr-1"></i> Dashboard
                     </a>
-                    <span class="text-white font-bold border-b-2 border-white pb-1 flex items-center">
-                        <i class="fas fa-list mr-2"></i> Links
+                    <span class="bg-white bg-opacity-20 text-white px-3 py-2 rounded-lg font-bold flex items-center shadow-inner">
+                        <i class="fas fa-list mr-1"></i> Link List
                     </span>
-                    <a href="/dashboard" class="text-white hover:text-purple-200 transition flex items-center">
-                        <i class="fas fa-tachometer-alt mr-2"></i> Dashboard
+                    <a href="/?view=analytics" class="text-white hover:text-purple-200 transition flex items-center">
+                        <i class="fas fa-chart-bar mr-1"></i> Analytics
                     </a>
-                    <button onclick="handleLogout()" class="bg-white text-purple-600 px-4 py-2 rounded-lg font-semibold hover:bg-purple-100 transition flex items-center">
-                        <i class="fas fa-sign-out-alt mr-2"></i> Logout
+                    <a href="/?view=settings" class="text-white hover:text-purple-200 transition flex items-center">
+                        <i class="fas fa-cog mr-1"></i> Settings
+                    </a>
+                    <button onclick="handleLogout()" class="bg-white text-purple-600 px-4 py-2 rounded-lg font-bold hover:bg-purple-100 transition flex items-center ml-2 shadow-sm">
+                        <i class="fas fa-sign-out-alt mr-1"></i> Logout
                     </button>
                 `;
 
                 const mobileLinksHtml = `
-                    <a href="/" class="text-gray-700 hover:bg-purple-50 px-4 py-3 rounded-lg transition flex items-center">
-                        <i class="fas fa-home mr-3 text-purple-600"></i> Home
+                    <a href="/?view=dashboard" class="text-gray-700 hover:bg-purple-50 px-4 py-3 rounded-lg transition flex items-center">
+                        <i class="fas fa-th-large mr-3 text-purple-600"></i> Dashboard
                     </a>
                     <span class="bg-purple-100 text-purple-800 px-4 py-3 rounded-lg font-bold flex items-center">
-                        <i class="fas fa-list mr-3"></i> Links
+                        <i class="fas fa-list mr-3"></i> Link List
                     </span>
-                    <a href="/dashboard" class="text-gray-700 hover:bg-purple-50 px-4 py-3 rounded-lg transition flex items-center">
-                        <i class="fas fa-tachometer-alt mr-3 text-purple-600"></i> Dashboard
+                    <a href="/?view=analytics" class="text-gray-700 hover:bg-purple-50 px-4 py-3 rounded-lg transition flex items-center">
+                        <i class="fas fa-chart-bar mr-3 text-purple-600"></i> Analytics
+                    </a>
+                    <a href="/?view=settings" class="text-gray-700 hover:bg-purple-50 px-4 py-3 rounded-lg transition flex items-center">
+                        <i class="fas fa-cog mr-3 text-purple-600"></i> Settings
                     </a>
                     <button onclick="handleLogout()" class="text-red-600 hover:bg-red-50 px-4 py-3 rounded-lg transition flex items-center w-full text-left">
                         <i class="fas fa-sign-out-alt mr-3"></i> Logout
                     </button>
                 `;
+
 
                 nav.innerHTML = linksHtml;
                 if (mobileNav) mobileNav.innerHTML = mobileLinksHtml;
