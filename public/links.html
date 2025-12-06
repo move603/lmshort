@@ -221,7 +221,7 @@
 
             try {
                 const token = localStorage.getItem('authToken');
-                const response = await fetch('/api/links/bulk-delete', {
+                const response = await fetch('/api/links?action=bulk-delete', {
                     method: 'DELETE',
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -718,7 +718,7 @@
 
             try {
                 // Get user data
-                const userResponse = await fetch('/api/auth/me', {
+                const userResponse = await fetch('/api/auth?type=me', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
 
