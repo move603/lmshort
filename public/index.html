@@ -215,7 +215,7 @@
         /* Mobile Responsiveness */
         @media (max-width: 768px) {
             .container {
-                padding: 0 0.75rem;
+                padding: 0 1rem;
             }
 
             .mobile-menu {
@@ -346,6 +346,74 @@
             .mobile-btn-group button {
                 width: 100%;
             }
+
+            /* Hero section mobile adjustments */
+            .hero-title {
+                font-size: 2.5rem;
+                line-height: 3rem;
+            }
+
+            .hero-subtitle {
+                font-size: 1.25rem;
+                line-height: 1.75rem;
+            }
+
+            /* Shortener card mobile adjustments */
+            .shortener-card {
+                padding: 1.5rem;
+                margin: 1rem 0;
+            }
+
+            /* Stats cards mobile adjustments */
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1rem;
+            }
+
+            .stat-card {
+                padding: 1rem;
+            }
+
+            .stat-number {
+                font-size: 1.5rem;
+            }
+
+            /* Link cards mobile adjustments */
+            .link-card {
+                padding: 1rem;
+            }
+
+            .link-title {
+                font-size: 1rem;
+            }
+
+            /* Modal mobile adjustments */
+            .modal-content {
+                margin: 1rem;
+                max-height: 90vh;
+                overflow-y: auto;
+            }
+
+            /* Toast mobile adjustments */
+            .toast-container {
+                bottom: 1rem;
+                left: 1rem;
+                right: 1rem;
+            }
+
+            /* Navigation mobile adjustments */
+            .nav-brand {
+                font-size: 1.25rem;
+            }
+
+            .mobile-menu-overlay {
+                padding: 1rem;
+            }
+
+            .mobile-menu-content {
+                width: 90%;
+                max-width: 320px;
+            }
         }
 
         @media (min-width: 769px) {
@@ -378,40 +446,39 @@
             }
         }
 
-        /* Mobile menu overlay */
+        /* Mobile Menu Overlay & Content */
         .mobile-menu-overlay {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 999;
+            inset: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 50;
             opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s ease;
+            pointer-events: none;
+            transition: opacity 0.3s ease-out;
         }
 
         .mobile-menu-overlay.active {
             opacity: 1;
-            visibility: visible;
+            pointer-events: auto;
         }
 
         .mobile-menu-content {
             position: fixed;
             top: 0;
-            right: -300px;
-            width: 280px;
-            height: 100%;
-            background: white;
-            box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
-            transition: right 0.3s ease;
-            z-index: 1000;
-            padding: 2rem 1rem;
+            right: 0;
+            bottom: 0;
+            width: 16rem;
+            /* w-64 */
+            background-color: white;
+            z-index: 60;
+            transform: translateX(100%);
+            transition: transform 0.3s ease-in-out;
+            box-shadow: -4px 0 15px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
         }
 
         .mobile-menu-content.active {
-            right: 0;
+            transform: translateX(0);
         }
 
         /* Responsive grid adjustments */
@@ -460,14 +527,16 @@
 
         <!-- Mobile Menu Overlay -->
         <div id="mobileMenuOverlay" class="mobile-menu-overlay">
-            <div class="mobile-menu-content">
-                <div class="flex justify-between items-center mb-6">
-                    <span class="text-xl font-bold">Menu</span>
+            <div id="mobileMenuContent" class="mobile-menu-content">
+                <div class="flex justify-between items-center mb-8">
+                    <h3 class="text-xl font-bold text-gray-800">Menu</h3>
                     <button id="closeMobileMenu" class="text-gray-500 hover:text-gray-700">
-                        <i class="fas fa-times text-xl"></i>
+                        <i class="fas fa-times text-2xl"></i>
                     </button>
                 </div>
-                <div id="mobileNavButtons" class="space-y-4"></div>
+                <div id="mobileNavButtons" class="flex flex-col space-y-4">
+                    <!-- Populated by JS -->
+                </div>
             </div>
         </div>
     </nav>
@@ -484,7 +553,8 @@
             currentUser: null,
             currentView: 'home', // Default to Home for Guest Mode
             links: [],
-            guestLinks: JSON.parse(localStorage.getItem('guestLinks')) || [],
+            // Guest links are transient (sessionStorage) per user requirement
+            guestLinks: JSON.parse(sessionStorage.getItem('guestLinks')) || [],
             settings: JSON.parse(localStorage.getItem('settings')) || {
                 brandName: 'SecureLink',
                 brandColor: '#667eea',
@@ -749,7 +819,7 @@
                     localStorage.setItem('authToken', data.user.token);
 
                     // Sync Guest Links
-                    const guestLinks = JSON.parse(localStorage.getItem('guestLinks')) || [];
+                    const guestLinks = JSON.parse(sessionStorage.getItem('guestLinks')) || [];
                     if (guestLinks.length > 0) {
                         try {
                             const guestShortCodes = guestLinks.map(l => l.shortCode);
@@ -761,7 +831,7 @@
                                 },
                                 body: JSON.stringify({ shortCodes: guestShortCodes })
                             });
-                            localStorage.removeItem('guestLinks'); // Clear after sync
+                            sessionStorage.removeItem('guestLinks'); // Clear after sync
                             APP_STATE.guestLinks = [];
                         } catch (syncError) {
                             console.error('Sync error:', syncError);
@@ -837,7 +907,29 @@
                 if (response.ok && data.success) {
                     APP_STATE.currentUser = data.user;
                     localStorage.setItem('authToken', data.user.token);
+
+                    // Sync Guest Links
+                    const guestLinks = JSON.parse(sessionStorage.getItem('guestLinks')) || [];
+                    if (guestLinks.length > 0) {
+                        try {
+                            const guestShortCodes = guestLinks.map(l => l.shortCode);
+                            await fetch('/api/links?action=sync', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'Authorization': `Bearer ${data.user.token}`
+                                },
+                                body: JSON.stringify({ shortCodes: guestShortCodes })
+                            });
+                            sessionStorage.removeItem('guestLinks'); // Clear after sync
+                            APP_STATE.guestLinks = [];
+                        } catch (syncError) {
+                            console.error('Sync error:', syncError);
+                        }
+                    }
+
                     showToast('Account created successfully!', 'success');
+                    await fetchUserLinks();
                     switchToDashboard();
                 } else {
                     // Specific error messages
@@ -926,26 +1018,52 @@
                             <!-- Advanced Options Toggler -->
                             <div class="text-center">
                                 <button onclick="document.getElementById('guestOptions').classList.toggle('hidden')" class="text-sm text-gray-500 hover:text-purple-600 transition flex items-center justify-center mx-auto">
-                                    <i class="fas fa-sliders-h mr-2"></i> Customize Link (Optional)
+                                    <i class="fas fa-sliders-h mr-2"></i> Advanced Options (Optional)
                                 </button>
                             </div>
 
-                            <div id="guestOptions" class="hidden mt-6 grid grid-cols-1 md:grid-cols-2 gap-4 animate-fade-in-down">
+                            <div id="guestOptions" class="hidden mt-6 grid grid-cols-1 md:grid-cols-2 gap-4 animate-fade-in-down text-left">
                                 <div>
-                                    <label class="block text-gray-700 font-semibold mb-2">Custom Alias</label>
-                                    <input type="text" id="customAlias" class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500" placeholder="my-link">
+                                    <label class="block text-gray-700 font-semibold mb-2 text-sm">Custom Alias</label>
+                                    <div class="flex">
+                                        <span class="inline-flex items-center px-3 rounded-l-lg border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">
+                                            /
+                                        </span>
+                                        <input type="text" id="customAlias" class="w-full px-4 py-3 border border-gray-300 rounded-r-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm" placeholder="my-link">
+                                    </div>
                                 </div>
+                                
                                 <div>
-                                    <label class="block text-gray-700 font-semibold mb-2">Expiry</label>
-                                    <select id="expiryTime" class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500">
+                                    <label class="block text-gray-700 font-semibold mb-2 text-sm">Expiry Time</label>
+                                    <select id="expiryTime" onchange="document.getElementById('customExpiryContainer').classList.toggle('hidden', this.value !== 'custom')" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm">
                                         <option value="">No Expiry</option>
+                                        <option value="5">5 Minutes</option>
+                                        <option value="10">10 Minutes</option>
                                         <option value="60">1 Hour</option>
                                         <option value="1440">24 Hours</option>
                                         <option value="10080">7 Days</option>
+                                        <option value="custom">Custom Date/Time</option>
                                     </select>
                                 </div>
-                                <input type="hidden" id="linkPassword" value="">
-                                <input type="hidden" id="linkTitle" value="">
+
+                                <div id="customExpiryContainer" class="hidden md:col-span-2">
+                                     <label class="block text-gray-700 font-semibold mb-2 text-sm">Custom Expiry</label>
+                                     <input type="datetime-local" id="customExpiryDate" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 text-sm">
+                                </div>
+
+                                <div>
+                                    <label class="block text-gray-700 font-semibold mb-2 text-sm">
+                                        <i class="fas fa-lock text-gray-400 mr-1"></i> Password
+                                    </label>
+                                    <input type="password" id="linkPassword" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm" placeholder="Optional password">
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-gray-700 font-semibold mb-2 text-sm">
+                                        <i class="fas fa-tag text-gray-400 mr-1"></i> Link Title
+                                    </label>
+                                    <input type="text" id="linkTitle" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm" placeholder="My Link">
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1423,10 +1541,10 @@
                         if (!APP_STATE.links) APP_STATE.links = [];
                         APP_STATE.links.unshift(data.link);
                     } else {
-                        // Guest mode: Save to local storage
+                        // Guest mode: Save to session storage (transient)
                         if (!APP_STATE.guestLinks) APP_STATE.guestLinks = [];
                         APP_STATE.guestLinks.unshift(data.link);
-                        localStorage.setItem('guestLinks', JSON.stringify(APP_STATE.guestLinks));
+                        sessionStorage.setItem('guestLinks', JSON.stringify(APP_STATE.guestLinks));
                     }
 
                     // Clear form

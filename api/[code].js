@@ -50,7 +50,19 @@ module.exports = async function handler(req, res) {
       if (req.method === 'POST') {
         const { password } = req.body || {};
         if (!password || password !== link.password) {
-          return res.status(401).json({ error: 'Incorrect password' });
+          // Return HTML with error message
+          return res.status(200).send(`
+            <html>
+              <body style="font-family: Arial; text-align: center; padding: 50px;">
+                <h1>Protected Link</h1>
+                <p style="color: red; font-weight: bold;">Incorrect password. Please try again.</p>
+                <form method="POST" action="/api/${code}">
+                  <input type="password" name="password" placeholder="Password" style="padding:10px;" required />
+                  <button type="submit" style="padding:10px 20px;">Unlock</button>
+                </form>
+              </body>
+            </html>
+          `);
         }
         // correct password: proceed to redirect
       } else {
@@ -61,7 +73,7 @@ module.exports = async function handler(req, res) {
               <h1>Protected Link</h1>
               <p>This link is password protected. Enter the password to continue.</p>
               <form method="POST" action="/api/${code}">
-                <input type="password" name="password" placeholder="Password" style="padding:10px;" />
+                <input type="password" name="password" placeholder="Password" style="padding:10px;" required />
                 <button type="submit" style="padding:10px 20px;">Unlock</button>
               </form>
             </body>
@@ -91,10 +103,10 @@ module.exports = async function handler(req, res) {
 
       // Get IP address
       const ipAddress = req.headers['x-forwarded-for']?.split(',')[0] ||
-                       req.headers['x-real-ip'] ||
-                       req.connection?.remoteAddress ||
-                       req.socket?.remoteAddress ||
-                       'unknown';
+        req.headers['x-real-ip'] ||
+        req.connection?.remoteAddress ||
+        req.socket?.remoteAddress ||
+        'unknown';
 
       await prisma.analytics.create({
         data: {

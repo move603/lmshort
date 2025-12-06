@@ -69,6 +69,39 @@
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             border-radius: 10px;
         }
+
+        .mobile-menu-overlay {
+            position: fixed;
+            inset: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 50;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease-out;
+        }
+
+        .mobile-menu-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .mobile-menu-content {
+            position: fixed;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            width: 16rem;
+            background-color: white;
+            z-index: 60;
+            transform: translateX(100%);
+            transition: transform 0.3s ease-in-out;
+            box-shadow: -4px 0 15px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+        }
+
+        .mobile-menu-content.active {
+            transform: translateX(0);
+        }
     </style>
 </head>
 
@@ -87,17 +120,15 @@
 
                 <!-- Mobile Menu Button -->
                 <button id="mobileMenuBtn"
-                    class="md:hidden text-white p-2 rounded-lg hover:bg-white hover:bg-opacity-20 transition">
-                    <i class="fas fa-bars text-2xl"></i>
+                    class="mobile-menu md:hidden text-white p-2 rounded-lg hover:bg-white hover:bg-opacity-20 transition">
+                    <i class="fas fa-bars text-xl"></i>
                 </button>
             </div>
         </div>
 
         <!-- Mobile Menu Overlay -->
-        <div id="mobileMenuOverlay"
-            class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden opacity-0 transition-opacity duration-300">
-            <div id="mobileMenuContent"
-                class="fixed top-0 right-0 w-64 h-full bg-white shadow-2xl transform translate-x-full transition-transform duration-300 z-50 p-6">
+        <div id="mobileMenuOverlay" class="mobile-menu-overlay">
+            <div class="mobile-menu-content">
                 <div class="flex justify-between items-center mb-8">
                     <h3 class="text-xl font-bold text-gray-800">Menu</h3>
                     <button id="closeMobileMenu" class="text-gray-500 hover:text-gray-700">
@@ -418,72 +449,72 @@
                     </div>
 
                     <!-- Stats Cards -->
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-                        <div class="bg-gradient-to-br from-blue-500 to-blue-700 rounded-2xl shadow-xl p-6 text-white">
+                    <div class="grid grid-cols-2 mobile:grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mb-8">
+                        <div class="bg-gradient-to-br from-blue-500 to-blue-700 rounded-2xl shadow-xl p-4 md:p-6 text-white mobile-card-spacing">
                             <div class="flex items-center justify-between">
-                                <div>
-                                    <p class="text-blue-100 text-sm font-semibold">Total Links</p>
-                                    <p class="text-4xl font-bold mt-2">${links.length}</p>
+                                <div class="flex-1">
+                                    <p class="text-blue-100 text-xs md:text-sm font-semibold">Total Links</p>
+                                    <p class="text-2xl md:text-4xl font-bold mt-1 md:mt-2">${links.length}</p>
                                 </div>
-                                <i class="fas fa-link text-5xl opacity-30"></i>
+                                <i class="fas fa-link text-3xl md:text-5xl opacity-30"></i>
                             </div>
                         </div>
 
-                        <div class="bg-gradient-to-br from-green-500 to-green-700 rounded-2xl shadow-xl p-6 text-white">
+                        <div class="bg-gradient-to-br from-green-500 to-green-700 rounded-2xl shadow-xl p-4 md:p-6 text-white mobile-card-spacing">
                             <div class="flex items-center justify-between">
-                                <div>
-                                    <p class="text-green-100 text-sm font-semibold">Active Links</p>
-                                    <p class="text-4xl font-bold mt-2">${activeLinks.length}</p>
+                                <div class="flex-1">
+                                    <p class="text-green-100 text-xs md:text-sm font-semibold">Active Links</p>
+                                    <p class="text-2xl md:text-4xl font-bold mt-1 md:mt-2">${activeLinks.length}</p>
                                 </div>
-                                <i class="fas fa-check-circle text-5xl opacity-30"></i>
+                                <i class="fas fa-check-circle text-3xl md:text-5xl opacity-30"></i>
                             </div>
                         </div>
 
-                        <div class="bg-gradient-to-br from-red-500 to-red-700 rounded-2xl shadow-xl p-6 text-white">
+                        <div class="bg-gradient-to-br from-red-500 to-red-700 rounded-2xl shadow-xl p-4 md:p-6 text-white mobile-card-spacing">
                             <div class="flex items-center justify-between">
-                                <div>
-                                    <p class="text-red-100 text-sm font-semibold">Expired</p>
-                                    <p class="text-4xl font-bold mt-2">${expiredLinks.length}</p>
+                                <div class="flex-1">
+                                    <p class="text-red-100 text-xs md:text-sm font-semibold">Expired</p>
+                                    <p class="text-2xl md:text-4xl font-bold mt-1 md:mt-2">${expiredLinks.length}</p>
                                 </div>
-                                <i class="fas fa-clock text-5xl opacity-30"></i>
+                                <i class="fas fa-clock text-3xl md:text-5xl opacity-30"></i>
                             </div>
                         </div>
 
-                        <div class="bg-gradient-to-br from-yellow-500 to-yellow-700 rounded-2xl shadow-xl p-6 text-white">
+                        <div class="bg-gradient-to-br from-yellow-500 to-yellow-700 rounded-2xl shadow-xl p-4 md:p-6 text-white mobile-card-spacing">
                             <div class="flex items-center justify-between">
-                                <div>
-                                    <p class="text-yellow-100 text-sm font-semibold">Protected</p>
-                                    <p class="text-4xl font-bold mt-2">${protectedLinks.length}</p>
+                                <div class="flex-1">
+                                    <p class="text-yellow-100 text-xs md:text-sm font-semibold">Protected</p>
+                                    <p class="text-2xl md:text-4xl font-bold mt-1 md:mt-2">${protectedLinks.length}</p>
                                 </div>
-                                <i class="fas fa-lock text-5xl opacity-30"></i>
+                                <i class="fas fa-lock text-3xl md:text-5xl opacity-30"></i>
                             </div>
                         </div>
                     </div>
 
                     <!-- Filters and Search -->
-                    <div class="bg-white rounded-2xl shadow-xl p-6 mb-8">
-                        <div class="flex flex-col md:flex-row gap-4">
-                            <div class="flex-1">
+                    <div class="bg-white rounded-2xl shadow-xl p-4 md:p-6 mb-8">
+                        <div class="flex flex-col gap-4">
+                            <div class="w-full">
                                 <input
                                     type="text"
                                     id="searchInput"
                                     placeholder="Search links..."
                                     value="${searchQuery}"
-                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent mobile-text-base"
                                     oninput="searchQuery = this.value; render()"
                                 >
                             </div>
-                            <div class="flex space-x-2">
-                                <button onclick="setFilter('all')" class="px-4 py-3 rounded-lg font-semibold transition ${currentFilter === 'all' ? 'gradient-bg text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}">
+                            <div class="flex flex-wrap gap-2 mobile-btn-group">
+                                <button onclick="setFilter('all')" class="flex-1 min-w-[120px] px-3 py-3 rounded-lg font-semibold transition mobile-nav-btn ${currentFilter === 'all' ? 'gradient-bg text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}">
                                     All (${links.length})
                                 </button>
-                                <button onclick="setFilter('active')" class="px-4 py-3 rounded-lg font-semibold transition ${currentFilter === 'active' ? 'gradient-bg text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}">
+                                <button onclick="setFilter('active')" class="flex-1 min-w-[120px] px-3 py-3 rounded-lg font-semibold transition mobile-nav-btn ${currentFilter === 'active' ? 'gradient-bg text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}">
                                     Active (${activeLinks.length})
                                 </button>
-                                <button onclick="setFilter('expired')" class="px-4 py-3 rounded-lg font-semibold transition ${currentFilter === 'expired' ? 'gradient-bg text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}">
+                                <button onclick="setFilter('expired')" class="flex-1 min-w-[120px] px-3 py-3 rounded-lg font-semibold transition mobile-nav-btn ${currentFilter === 'expired' ? 'gradient-bg text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}">
                                     Expired (${expiredLinks.length})
                                 </button>
-                                <button onclick="setFilter('protected')" class="px-4 py-3 rounded-lg font-semibold transition ${currentFilter === 'protected' ? 'gradient-bg text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}">
+                                <button onclick="setFilter('protected')" class="flex-1 min-w-[120px] px-3 py-3 rounded-lg font-semibold transition mobile-nav-btn ${currentFilter === 'protected' ? 'gradient-bg text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}">
                                     Protected (${protectedLinks.length})
                                 </button>
                             </div>
@@ -589,15 +620,15 @@
                                                 </div>
                                             </div>
 
-                                            <div class="flex items-center space-x-2 flex-wrap">
-                                                <button onclick="copyLink('${shortUrl}')" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-3 rounded-lg transition font-semibold shadow-md" title="Copy Link">
-                                                    <i class="fas fa-copy"></i>
+                                            <div class="flex items-center space-x-2 flex-wrap gap-2">
+                                                <button onclick="copyLink('${shortUrl}')" class="flex-1 min-w-[44px] bg-blue-500 hover:bg-blue-600 text-white px-3 py-3 rounded-lg transition font-semibold shadow-md mobile-btn" title="Copy Link" aria-label="Copy link to clipboard">
+                                                    <i class="fas fa-copy"></i><span class="hidden md:inline ml-1">Copy</span>
                                                 </button>
-                                                <button onclick="showQRCode('${link.shortCode}')" class="bg-purple-500 hover:bg-purple-600 text-white px-4 py-3 rounded-lg transition font-semibold shadow-md" title="QR Code">
-                                                    <i class="fas fa-qrcode"></i>
+                                                <button onclick="showQRCode('${link.shortCode}')" class="flex-1 min-w-[44px] bg-purple-500 hover:bg-purple-600 text-white px-3 py-3 rounded-lg transition font-semibold shadow-md mobile-btn" title="QR Code" aria-label="Generate QR code">
+                                                    <i class="fas fa-qrcode"></i><span class="hidden md:inline ml-1">QR</span>
                                                 </button>
-                                                <button onclick="deleteLink('${link.id}')" class="bg-red-500 hover:bg-red-600 text-white px-4 py-3 rounded-lg transition font-semibold shadow-md" title="Delete">
-                                                    <i class="fas fa-trash"></i>
+                                                <button onclick="deleteLink('${link.id}')" class="flex-1 min-w-[44px] bg-red-500 hover:bg-red-600 text-white px-3 py-3 rounded-lg transition font-semibold shadow-md mobile-btn" title="Delete" aria-label="Delete link">
+                                                    <i class="fas fa-trash"></i><span class="hidden md:inline ml-1">Delete</span>
                                                 </button>
                                             </div>
                                         </div>
@@ -661,11 +692,29 @@
                     </a>
                 `;
                 nav.innerHTML = linksHtml;
-                if (mobileNav) mobileNav.innerHTML = linksHtml.replace('text-white', 'text-gray-800');
+                if (mobileNavButtons) mobileNavButtons.innerHTML = linksHtml.replace('text-white', 'text-gray-800');
             }
 
-            // Initialize mobile menu handlers
-            initMobileMenu();
+            // Add mobile menu event listeners
+            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+            const mobileMenuOverlay = document.getElementById('mobileMenuOverlay');
+            const closeMobileMenuBtn = document.getElementById('closeMobileMenu');
+
+            if (mobileMenuBtn) {
+                mobileMenuBtn.addEventListener('click', toggleMobileMenu);
+            }
+
+            if (closeMobileMenuBtn) {
+                closeMobileMenuBtn.addEventListener('click', closeMobileMenu);
+            }
+
+            if (mobileMenuOverlay) {
+                mobileMenuOverlay.addEventListener('click', function (e) {
+                    if (e.target === mobileMenuOverlay) {
+                        closeMobileMenu();
+                    }
+                });
+            }
         }
 
         function initMobileMenu() {
