@@ -14,7 +14,7 @@
 - [x] Improve mobile responsiveness and UI/UX
 
 ## Phase 3: QR Code & Analytics Implementation
-- [x] Fix QR code generation (generate actual QR codes)
+- [ ] Fix QR code generation (generate actual QR codes)
 - [ ] Implement "Clicks Over Time" chart with real data
 - [ ] Implement "Device Distribution" analytics with real data
 

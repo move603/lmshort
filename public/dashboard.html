@@ -733,7 +733,7 @@
             });
         }
 
-        async function showQRCode(shortCode) {
+        function showQRCode(shortCode) {
             const shortUrl = `${window.location.origin}/${shortCode}`;
 
             const modal = document.createElement('div');
@@ -745,68 +745,24 @@
                             <i class="fas fa-qrcode gradient-bg bg-clip-text text-transparent mr-3"></i>
                             QR Code
                         </h3>
-                        <div id="qrcodeContainer" class="flex justify-center mb-6 p-4 bg-gray-50 rounded-2xl">
-                            <div class="animate-pulse flex space-x-4">
-                                <div class="rounded bg-gray-300 h-48 w-48"></div>
-                            </div>
-                        </div>
+                        <div id="qrcodeContainer" class="flex justify-center mb-6 p-4 bg-gray-50 rounded-2xl"></div>
                         <p class="text-sm text-gray-600 mb-6 break-all font-mono bg-purple-50 p-3 rounded-lg">${shortUrl}</p>
-                        <div class="flex space-x-3">
-                            <button onclick="downloadQRCode('${shortCode}')" class="flex-1 gradient-bg text-white px-6 py-3 rounded-xl font-bold hover:shadow-xl transition" disabled>
-                                <i class="fas fa-download mr-2"></i> Download
-                            </button>
-                            <button onclick="this.closest('.fixed').remove()" class="flex-1 bg-gray-500 text-white px-6 py-3 rounded-xl font-bold hover:bg-gray-600 transition">
-                                <i class="fas fa-times mr-2"></i> Close
-                            </button>
-                        </div>
+                        <button onclick="this.closest('.fixed').remove()" class="w-full gradient-bg text-white px-6 py-3 rounded-xl font-bold hover:shadow-xl transition text-lg">
+                            <i class="fas fa-times mr-2"></i> Close
+                        </button>
                     </div>
                 </div>
             `;
             document.body.appendChild(modal);
 
-            try {
-                // Fetch QR code from API
-                const response = await fetch(`/api/links/qrcode?shortCode=${shortCode}&size=256`);
-                const data = await response.json();
-
-                if (data.success) {
-                    const container = document.getElementById('qrcodeContainer');
-                    container.innerHTML = `<img src="${data.qrCode}" alt="QR Code" class="max-w-full h-auto rounded-lg shadow-lg">`;
-
-                    // Enable download button
-                    const downloadBtn = modal.querySelector('button[onclick*="downloadQRCode"]');
-                    downloadBtn.disabled = false;
-                    downloadBtn.onclick = () => downloadQRCode(shortCode, data.qrCode);
-                } else {
-                    throw new Error(data.error || 'Failed to generate QR code');
-                }
-            } catch (error) {
-                console.error('QR Code generation error:', error);
-                const container = document.getElementById('qrcodeContainer');
-                container.innerHTML = `
-                    <div class="text-center text-red-500">
-                        <i class="fas fa-exclamation-triangle text-4xl mb-2"></i>
-                        <p>Failed to generate QR code</p>
-                        <p class="text-sm">${error.message}</p>
-                    </div>
-                `;
-                showToast('Failed to generate QR code', 'error');
-            }
-        }
-
-        // Download QR code function
-        function downloadQRCode(shortCode, qrDataUrl) {
-            if (qrDataUrl) {
-                const link = document.createElement('a');
-                link.download = `qr-code-${shortCode}.png`;
-                link.href = qrDataUrl;
-                link.click();
-                showToast('QR Code downloaded!', 'success');
-            } else {
-                // Fallback: download via API
-                window.open(`/api/links/qrcode?shortCode=${shortCode}&format=png`, '_blank');
-                showToast('QR Code download started!', 'success');
-            }
+            // Generate QR code
+            new QRCode(document.getElementById('qrcodeContainer'), {
+                text: shortUrl,
+                width: 256,
+                height: 256,
+                colorDark: '#667eea',
+                colorLight: '#ffffff'
+            });
         }
 
         // Navigation
