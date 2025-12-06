@@ -711,6 +711,7 @@
             const email = document.getElementById('loginEmail').value;
             const password = document.getElementById('loginPassword').value;
             const captchaAnswer = parseInt(document.getElementById('captchaAnswer').value);
+            const loginBtn = document.querySelector('#login button');
 
             if (!email || !password) {
                 showToast('Please fill in all fields', 'error');
@@ -721,6 +722,11 @@
                 showToast('CAPTCHA verification failed', 'error');
                 return;
             }
+
+            // Set loading state
+            const originalText = loginBtn.innerHTML;
+            loginBtn.disabled = true;
+            loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Signing In...';
 
             try {
                 const response = await fetch('/api/auth?type=login', {
@@ -766,11 +772,26 @@
                     await fetchUserLinks();
                     switchToDashboard();
                 } else {
-                    showToast(data.error || 'Login failed', 'error');
+                    // Specific error messages
+                    let errorMessage = 'Login failed';
+                    if (data.error) {
+                        if (data.error.includes('email') || data.error.includes('password')) {
+                            errorMessage = 'Invalid email or password';
+                        } else if (data.error.includes('CAPTCHA')) {
+                            errorMessage = 'CAPTCHA verification failed';
+                        } else {
+                            errorMessage = data.error;
+                        }
+                    }
+                    showToast(errorMessage, 'error');
                 }
             } catch (error) {
                 console.error('Login error:', error);
-                showToast('Network error. Please try again.', 'error');
+                showToast('Network error. Please check your connection and try again.', 'error');
+            } finally {
+                // Reset loading state
+                loginBtn.disabled = false;
+                loginBtn.innerHTML = originalText;
             }
         }
 
@@ -779,6 +800,7 @@
             const email = document.getElementById('signupEmail').value;
             const password = document.getElementById('signupPassword').value;
             const captchaAnswer = parseInt(document.getElementById('captchaAnswer').value);
+            const signupBtn = document.querySelector('#signup button');
 
             if (!name || !email || !password) {
                 showToast('Please fill in all fields', 'error');
@@ -789,6 +811,11 @@
                 showToast('CAPTCHA verification failed', 'error');
                 return;
             }
+
+            // Set loading state
+            const originalText = signupBtn.innerHTML;
+            signupBtn.disabled = true;
+            signupBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Creating Account...';
 
             try {
                 const response = await fetch('/api/auth?type=register', {
@@ -813,11 +840,30 @@
                     showToast('Account created successfully!', 'success');
                     switchToDashboard();
                 } else {
-                    showToast(data.error || 'Registration failed', 'error');
+                    // Specific error messages
+                    let errorMessage = 'Registration failed';
+                    if (data.error) {
+                        if (data.error.includes('email') || data.error.includes('already')) {
+                            errorMessage = 'Email already exists or is invalid';
+                        } else if (data.error.includes('password')) {
+                            errorMessage = 'Password is too weak or invalid';
+                        } else if (data.error.includes('name')) {
+                            errorMessage = 'Name is required or invalid';
+                        } else if (data.error.includes('CAPTCHA')) {
+                            errorMessage = 'CAPTCHA verification failed';
+                        } else {
+                            errorMessage = data.error;
+                        }
+                    }
+                    showToast(errorMessage, 'error');
                 }
             } catch (error) {
                 console.error('Signup error:', error);
-                showToast('Network error. Please try again.', 'error');
+                showToast('Network error. Please check your connection and try again.', 'error');
+            } finally {
+                // Reset loading state
+                signupBtn.disabled = false;
+                signupBtn.innerHTML = originalText;
             }
         }
 
@@ -1929,10 +1975,98 @@
             document.body.appendChild(modal);
         }
 
-        function initializeCharts() {
+        async function initializeCharts() {
             const userLinks = APP_STATE.links.filter(l => l.userId === APP_STATE.currentUser.id);
 
-            // Clicks Over Time Chart
+            try {
+                // Fetch real analytics data
+                const response = await fetch('/api/links?action=analytics', {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+                    }
+                });
+
+                let analyticsData = {
+                    clicksOverTime: [],
+                    deviceDistribution: []
+                };
+
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.success) {
+                        analyticsData = data.analytics;
+                    }
+                }
+
+                // Clicks Over Time Chart
+                const clicksCtx = document.getElementById('clicksChart');
+                if (clicksCtx) {
+                    const labels = analyticsData.clicksOverTime.length > 0 ?
+                        analyticsData.clicksOverTime.map(d => new Date(d.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })) :
+                        Array.from({ length: 7 }, (_, i) => {
+                            const d = new Date();
+                            d.setDate(d.getDate() - (6 - i));
+                            return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                        });
+
+                    const data = analyticsData.clicksOverTime.length > 0 ?
+                        analyticsData.clicksOverTime.map(d => d.clicks) :
+                        Array(7).fill(0);
+
+                    new Chart(clicksCtx, {
+                        type: 'line',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                label: 'Clicks',
+                                data: data,
+                                borderColor: '#667eea',
+                                backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                                tension: 0.4,
+                                fill: true
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: true,
+                            plugins: {
+                                legend: { display: false }
+                            }
+                        }
+                    });
+                }
+
+                // Device Chart
+                const deviceCtx = document.getElementById('deviceChart');
+                if (deviceCtx) {
+                    const deviceData = analyticsData.deviceDistribution.length > 0 ?
+                        analyticsData.deviceDistribution :
+                        [{ device: 'Desktop', count: 45 }, { device: 'Mobile', count: 35 }, { device: 'Tablet', count: 20 }];
+
+                    new Chart(deviceCtx, {
+                        type: 'doughnut',
+                        data: {
+                            labels: deviceData.map(d => d.device),
+                            datasets: [{
+                                data: deviceData.map(d => d.count),
+                                backgroundColor: ['#667eea', '#764ba2', '#f093fb']
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: true
+                        }
+                    });
+                }
+            } catch (error) {
+                console.error('Error fetching analytics:', error);
+                // Fallback to mock data if API fails
+                initializeChartsFallback();
+            }
+        }
+
+        function initializeChartsFallback() {
+            // Fallback mock data if API fails
             const clicksCtx = document.getElementById('clicksChart');
             if (clicksCtx) {
                 const last7Days = Array.from({ length: 7 }, (_, i) => {
@@ -1947,7 +2081,7 @@
                         labels: last7Days,
                         datasets: [{
                             label: 'Clicks',
-                            data: Array(7).fill(0).map((_, i) => Math.floor(Math.random() * 50)),
+                            data: Array(7).fill(0),
                             borderColor: '#667eea',
                             backgroundColor: 'rgba(102, 126, 234, 0.1)',
                             tension: 0.4,
@@ -1964,21 +2098,14 @@
                 });
             }
 
-            // Device Chart
             const deviceCtx = document.getElementById('deviceChart');
             if (deviceCtx) {
-                const allAnalytics = userLinks.flatMap(l => l.analytics || []);
-                const devices = allAnalytics.reduce((acc, a) => {
-                    acc[a.device] = (acc[a.device] || 0) + 1;
-                    return acc;
-                }, {});
-
                 new Chart(deviceCtx, {
                     type: 'doughnut',
                     data: {
-                        labels: Object.keys(devices).length > 0 ? Object.keys(devices) : ['Desktop', 'Mobile', 'Tablet'],
+                        labels: ['Desktop', 'Mobile', 'Tablet'],
                         datasets: [{
-                            data: Object.keys(devices).length > 0 ? Object.values(devices) : [45, 35, 20],
+                            data: [45, 35, 20],
                             backgroundColor: ['#667eea', '#764ba2', '#f093fb']
                         }]
                     },

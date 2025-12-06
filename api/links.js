@@ -65,6 +65,9 @@ module.exports = async function handler(req, res) {
         }
 
         if (req.method === 'GET') {
+            if (action === 'analytics') {
+                return await handleAnalytics(req, res, user);
+            }
             // Default GET is list links
             return await handleList(req, res, user);
         }
@@ -317,5 +320,81 @@ async function handleBulkDelete(req, res, user) {
         success: true,
         deleted: deleteResult.count,
         message: `Successfully deleted ${deleteResult.count} link(s)`
+    });
+}
+
+async function handleAnalytics(req, res, user) {
+    const { period = '7d' } = req.query;
+
+    // Calculate date range
+    const now = new Date();
+    let startDate;
+    switch (period) {
+        case '1d':
+            startDate = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+            break;
+        case '7d':
+            startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+            break;
+        case '30d':
+            startDate = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+            break;
+        default:
+            startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+    }
+
+    // Get all analytics for user's links within date range
+    const analytics = await prisma.analytics.findMany({
+        where: {
+            link: {
+                userId: user.id
+            },
+            createdAt: {
+                gte: startDate
+            }
+        },
+        orderBy: {
+            createdAt: 'asc'
+        }
+    });
+
+    // Aggregate clicks over time (daily)
+    const clicksOverTime = {};
+    analytics.forEach(record => {
+        const date = record.createdAt.toISOString().split('T')[0]; // YYYY-MM-DD
+        clicksOverTime[date] = (clicksOverTime[date] || 0) + 1;
+    });
+
+    const clicksData = Object.entries(clicksOverTime).map(([date, clicks]) => ({
+        date,
+        clicks
+    }));
+
+    // Aggregate device distribution
+    const deviceDistribution = {};
+    analytics.forEach(record => {
+        const device = record.device || 'Unknown';
+        deviceDistribution[device] = (deviceDistribution[device] || 0) + 1;
+    });
+
+    const deviceData = Object.entries(deviceDistribution).map(([device, count]) => ({
+        device,
+        count
+    }));
+
+    // Get total clicks for user's links
+    const totalClicks = await prisma.link.aggregate({
+        where: { userId: user.id },
+        _sum: { clicks: true }
+    });
+
+    return res.status(200).json({
+        success: true,
+        analytics: {
+            totalClicks: totalClicks._sum.clicks || 0,
+            clicksOverTime: clicksData,
+            deviceDistribution: deviceData,
+            period
+        }
     });
 }
